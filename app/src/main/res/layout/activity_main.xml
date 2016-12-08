@@ -31,6 +31,30 @@
         android:layout_height="50dp"
         android:text="发现" />
 
+    <Button
+        android:id="@+id/btn_lacation"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="经纬度" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/range_et"
+            android:layout_width="100dp"
+            android:layout_height="50dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="米,最少是50米"
+            android:textSize="20sp" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/tv_discover"
         android:layout_width="match_parent"
