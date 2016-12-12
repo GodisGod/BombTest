@@ -1,6 +1,8 @@
-package com.example.bombtest;
+package com.example.bombtest.activity;
 
 import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -9,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
@@ -16,29 +19,37 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.bombtest.R;
+import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.util.HD;
 
+import java.io.File;
 import java.util.List;
 
 import cn.bmob.v3.Bmob;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
-import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UploadFileListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private Context ctx;
     private EditText send_content;
     private Button btn_send;
     private Button btn_discover;
     private TextView tv_discover;
-
+    private ImageView send_img_choose;
     private Button btn_send_img;
     private double lat;
     private double lng;
-    private EditText editText;
+    private EditText edit_text;
     private double range = 100;
+    private String img_url;
     //高德定位
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -73,7 +84,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
-
+        ctx = this;
         initview();
 
         initLocation();
@@ -81,8 +92,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initview() {
-        editText = (EditText) findViewById(R.id.range_et);
+        edit_text = (EditText) findViewById(R.id.range_et);
         send_content = (EditText) findViewById(R.id.ed_content);
+
+        send_img_choose = (ImageView) findViewById(R.id.img_send);
 
         btn_send = (Button) findViewById(R.id.btn_send);
         btn_discover = (Button) findViewById(R.id.btn_discover);
@@ -93,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_discover.setOnClickListener(this);
         tv_discover.setOnClickListener(this);
         btn_send_img.setOnClickListener(this);
+        send_img_choose.setOnClickListener(this);
     }
 
 
@@ -138,10 +152,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_send:
-                String content = send_content.getText().toString();
+                final String content = send_content.getText().toString();
+                final PaperMessage message = new PaperMessage();
                 if (!content.isEmpty()) {
-                    PaperMessage message = new PaperMessage();
+                    //添加文字
                     message.setText_message(content);
+                    //添加经纬度
                     message.setGpsAdd(new BmobGeoPoint(lng, lat));
                     HD.LOG("添加的经纬度： " + "\n" +
                             "经度：" + lng + "\n" +
@@ -149,29 +165,64 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     HD.TOS("添加的经纬度： " + "\n" +
                             "经度：" + lng + "\n" +
                             "维度：" + lat);
-                    message.save(new SaveListener<String>() {
+                }
+                HD.LOG("1");
+                //添加图片
+                if (!img_url.isEmpty()) {
+                    final File file = new File(img_url);
+                    final BmobFile bmobFile = new BmobFile(file);
+                    HD.LOG("2 " + (bmobFile == null) + " imgulr: " + img_url);
+
+                    bmobFile.upload(new UploadFileListener() {
                         @Override
-                        public void done(String s, BmobException e) {
+                        public void done(BmobException e) {
                             if (e == null) {
-                                HD.TOS("添加数据成功，返回objectId为： " + s);
-                                Log.i("LHD", "成功：" + s);
+                                HD.TOS("上传成功" + img_url);
+                                Log.i("LHD", "成功：" + img_url);
+//                                message.setIcon(bmobFile);
+//                                message.save(new SaveListener<String>() {
+//                                    @Override
+//                                    public void done(String s, BmobException e) {
+//                                        HD.LOG("纸片上传成功！");
+//                                        if (e == null) {
+//                                            HD.TOS("添加数据成功，返回objectId为： " + s);
+//                                            Log.i("LHD", "成功：" + s);
+//                                        } else {
+//                                            HD.TOS("添加数据失败" + e.getMessage());
+//                                            Log.i("LHD", "失败： " + e.getMessage());
+//                                        }
+//                                    }
+//                                });
                             } else {
-                                HD.TOS("添加数据失败" + e.getMessage());
-                                Log.i("LHD", "失败： " + e.getMessage());
+                                HD.TOS("纸片上传失败" + e.getMessage());
+                                HD.LOG("失败： " + e.getMessage());
                             }
                         }
+
+                        @Override
+                        public void onProgress(Integer value) {
+                            super.onProgress(value);
+                            HD.LOG("progress: " + value);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            super.onFinish();
+                            HD.LOG("onFinish");
+                        }
                     });
+
                 }
                 break;
             case R.id.btn_discover:
                 tv_discover.setText("");
                 BmobQuery query = new BmobQuery("PaperMessage");
-                String s = editText.getText().toString().trim();
+                String s = edit_text.getText().toString().trim();
 
                 if (s.isEmpty()) {
                     range = 100;
                 } else {
-                    range = Double.parseDouble(editText.getText().toString());
+                    range = Double.parseDouble(edit_text.getText().toString());
                 }
                 double a = range / 1000;
                 HD.TOS("搜索范围： " + range);
@@ -187,10 +238,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         if (e == null) {
                             Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
                             StringBuilder sb = new StringBuilder();
-                            for (PaperMessage m :
-                                    list) {
+                            for (PaperMessage m : list) {
                                 Log.i("LHD", "message: " + m.getText_message());
-                                sb.append(m.getText_message() + "\n,");
+                                sb.append(m.getText_message() + "  上传的图片：" + m.getIcon().getFileUrl() + "\n");
                             }
                             tv_discover.setText(sb.toString());
                         } else {
@@ -203,7 +253,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_send_img:
 
                 break;
+            case R.id.img_send:
+                startActivityForResult(new Intent(ctx, PhotosWall.class), 1);
+                break;
+        }
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                img_url = data.getStringExtra("imgurl");
+
+                Glide.with(ctx).load(img_url)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .centerCrop()  //转换宽高比
+                        .into(send_img_choose);
+            }
         }
     }
 
@@ -227,10 +295,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            @Override
 //            public void done(String s, BmobException e) {
 //                if (e==null){
-//                    Toast.makeText(MainActivity.this,"添加数据成功，返回objectId为： "+s,);
+//                    Toast.makeText(ctx,"添加数据成功，返回objectId为： "+s,);
 //                    Log.i("LHD","成功："+s);
 //                }else {
-//                    Toast.makeText(MainActivity.this,"添加数据失败"+e.getMessage(),);
+//                    Toast.makeText(ctx,"添加数据失败"+e.getMessage(),);
 //                    Log.i("LHD","失败： "+e.getMessage());
 //                }
 //            }

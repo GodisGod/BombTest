@@ -11,9 +11,6 @@ public class BombTestObject extends BmobObject {
     private String address;
     private BmobGeoPoint gpsAdd;
 
-    //    public BombTestObject(){
-//        this.setTableName("Person");
-//    }
     public String getName() {
         return name;
     }
