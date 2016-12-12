@@ -2,9 +2,6 @@ package com.example.bombtest;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -13,9 +10,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.bombtest.util.LocationUtil;
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
+import com.amap.api.location.AMapLocationListener;
+import com.example.bombtest.util.HD;
 
 import java.util.List;
 
@@ -26,72 +27,145 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText send_content;
     private Button btn_send;
     private Button btn_discover;
     private TextView tv_discover;
 
-    private LocationManager manager;
-    private String locationProvider;
-    private Button location_btn;
+    private Button btn_send_img;
     private double lat;
     private double lng;
     private EditText editText;
     private double range = 100;
+    //高德定位
+    //声明AMapLocationClient类对象
+    public AMapLocationClient mLocationClient = null;
+    //声明定位回调监听器
+    public AMapLocationListener mLocationListener = new AMapLocationListener() {
+        @Override
+        public void onLocationChanged(AMapLocation amapLocation) {
+            if (amapLocation != null) {
+                if (amapLocation.getErrorCode() == 0) {
+                    //可在其中解析amapLocation获取相应内容。
+                    lng = amapLocation.getLongitude();
+                    lat = amapLocation.getLatitude();
+                    Log.i("LHD", "lat: " + lat + "   lng: " + lng);
+                    HD.TOS("lat: " + lat + "   lng: " + lng + "\n" + "位置： " + amapLocation.getAddress());
+                } else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e("LHD", "location Error, ErrCode:"
+                            + amapLocation.getErrorCode() + ", errInfo:"
+                            + amapLocation.getErrorInfo());
+                    HD.TOS("location Error, ErrCode:"
+                            + amapLocation.getErrorCode() + ", errInfo:"
+                            + amapLocation.getErrorInfo());
+                }
+            }
+        }
+    };
+    //声明AMapLocationClientOption对象
+    public AMapLocationClientOption mLocationOption = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
+
+        initview();
+
+        initLocation();
+
+    }
+
+    private void initview() {
         editText = (EditText) findViewById(R.id.range_et);
         send_content = (EditText) findViewById(R.id.ed_content);
+
         btn_send = (Button) findViewById(R.id.btn_send);
         btn_discover = (Button) findViewById(R.id.btn_discover);
         tv_discover = (TextView) findViewById(R.id.tv_discover);
-        location_btn = (Button) findViewById(R.id.btn_lacation);
-        initlocation();
-        location_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                initlocation();
-            }
-        });
-        btn_send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btn_send_img = (Button) findViewById(R.id.btn_send_img);
+
+        btn_send.setOnClickListener(this);
+        btn_discover.setOnClickListener(this);
+        tv_discover.setOnClickListener(this);
+        btn_send_img.setOnClickListener(this);
+    }
+
+
+    private void initLocation() {
+        //初始化定位
+        mLocationClient = new AMapLocationClient(getApplicationContext());
+        //设置定位回调监听
+        mLocationClient.setLocationListener(mLocationListener);
+        //初始化AMapLocationClientOption对象
+        mLocationOption = new AMapLocationClientOption();
+
+        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
+        mLocationOption.setLocationMode(AMapLocationMode.Hight_Accuracy);
+
+        //低功耗定位模式：不会使用GPS和其他传感器，只会使用网络定位（Wi-Fi和基站定位）；
+        //设置定位模式为AMapLocationMode.Battery_Saving，低功耗模式。
+//        mLocationOption.setLocationMode(AMapLocationMode.Battery_Saving);
+
+        // 仅用设备定位模式：不需要连接网络，只使用GPS进行定位，这种模式下不支持室内环境的定位，自 v2.9.0 版本支持返回地址描述信息。
+        //设置定位模式为AMapLocationMode.Device_Sensors，仅设备模式。
+//        mLocationOption.setLocationMode(AMapLocationMode.Device_Sensors);
+
+//       获取最近3s内精度最高的一次定位结果：
+//设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
+        mLocationOption.setOnceLocationLatest(true);
+        //设置定位间隔,单位毫秒,默认为2000ms，最低1000ms。
+        mLocationOption.setInterval(2000);
+        //设置是否返回地址信息（默认返回地址信息）
+        mLocationOption.setNeedAddress(true);
+        //设置是否允许模拟位置,默认为false，不允许模拟位置
+        mLocationOption.setMockEnable(false);
+        //单位是毫秒，默认30000毫秒，建议超时时间不要低于8000毫秒。
+        mLocationOption.setHttpTimeOut(20000);
+        //关闭缓存机制
+        mLocationOption.setLocationCacheEnable(false);
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
+        //启动定位
+        mLocationClient.startLocation();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btn_send:
                 String content = send_content.getText().toString();
                 if (!content.isEmpty()) {
                     PaperMessage message = new PaperMessage();
                     message.setText_message(content);
                     message.setGpsAdd(new BmobGeoPoint(lng, lat));
-                    Log.i("LHD", "添加的经纬度： " + "\n" +
+                    HD.LOG("添加的经纬度： " + "\n" +
+                            "经度：" + lng + "\n" +
+                            "维度：" + lat);
+                    HD.TOS("添加的经纬度： " + "\n" +
                             "经度：" + lng + "\n" +
                             "维度：" + lat);
                     message.save(new SaveListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
                             if (e == null) {
-                                Toast.makeText(MainActivity.this, "添加数据成功，返回objectId为： " + s, Toast.LENGTH_SHORT).show();
+                                HD.TOS("添加数据成功，返回objectId为： " + s);
                                 Log.i("LHD", "成功：" + s);
                             } else {
-                                Toast.makeText(MainActivity.this, "添加数据失败" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                HD.TOS("添加数据失败" + e.getMessage());
                                 Log.i("LHD", "失败： " + e.getMessage());
                             }
                         }
                     });
                 }
-            }
-        });
-
-        btn_discover.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                break;
+            case R.id.btn_discover:
                 tv_discover.setText("");
                 BmobQuery query = new BmobQuery("PaperMessage");
-//                query.addWhereEqualTo("gpsAdd", new BmobGeoPoint(116.398, 39.914));
                 String s = editText.getText().toString().trim();
 
                 if (s.isEmpty()) {
@@ -99,9 +173,8 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     range = Double.parseDouble(editText.getText().toString());
                 }
-                double a = range/1000;
-                Toast.makeText(MainActivity.this, "搜索范围： " + range, Toast.LENGTH_SHORT).show();
-                Log.i("LHD", "range= " + a + " is:" + s.isEmpty());
+                double a = range / 1000;
+                HD.TOS("搜索范围： " + range);
                 query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
 //                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
                 Log.i("LHD", "发现的经纬度： " + "\n" +
@@ -117,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                             for (PaperMessage m :
                                     list) {
                                 Log.i("LHD", "message: " + m.getText_message());
-                                sb.append(m.getText_message());
+                                sb.append(m.getText_message() + "\n,");
                             }
                             tv_discover.setText(sb.toString());
                         } else {
@@ -126,23 +199,26 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+                break;
+            case R.id.btn_send_img:
 
-//                query.addWhereEqualTo("name", "lucky");
-//        query.setLimit(2);
-//                query.order("createAt");
-//                query.findObjectsByTable(new QueryListener<JSONArray>() {
-//                    @Override
-//                    public void done(JSONArray jsonArray, BmobException e) {
-//                        if (e == null) {
-//                            Log.i("LHD", "查詢成功：" + jsonArray.toString());
-//                            tv_discover.setText(jsonArray.toString());
-//                        } else {
-//                            Log.i("LHD", "失敗：" + e.getMessage() + ", " + e.getErrorCode());
-//                        }
-//                    }
-//                });
-            }
-        });
+                break;
+
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //移除监听器
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
+
+    }
+}
+
 
 //        BombTestObject p2 = new BombTestObject();
 //        p2.setName("hd");
@@ -151,10 +227,10 @@ public class MainActivity extends AppCompatActivity {
 //            @Override
 //            public void done(String s, BmobException e) {
 //                if (e==null){
-//                    Toast.makeText(MainActivity.this,"添加数据成功，返回objectId为： "+s,Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this,"添加数据成功，返回objectId为： "+s,);
 //                    Log.i("LHD","成功："+s);
 //                }else {
-//                    Toast.makeText(MainActivity.this,"添加数据失败"+e.getMessage(),Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(MainActivity.this,"添加数据失败"+e.getMessage(),);
 //                    Log.i("LHD","失败： "+e.getMessage());
 //                }
 //            }
@@ -200,105 +276,3 @@ public class MainActivity extends AppCompatActivity {
 //               }
 //            }
 //        });
-    }
-
-    private void initlocation() {
-        //获取地理位置管理器
-        manager = LocationUtil.getlocation(MainActivity.this);
-        //获取所有可用的位置提供器
-        List<String> providers = manager.getProviders(true);
-        if (providers.contains(LocationManager.GPS_PROVIDER)) {
-            //如果是GPS
-            locationProvider = LocationManager.GPS_PROVIDER;
-        } else if (providers.contains(LocationManager.NETWORK_PROVIDER)) {
-            //如果是Network
-            locationProvider = LocationManager.NETWORK_PROVIDER;
-        } else {
-            Toast.makeText(this, "没有可用的位置提供器", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        //获取Location
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        Location location = manager.getLastKnownLocation(locationProvider);
-        if (location != null) {
-            //不为空,显示地理位置经纬度
-            showLocation(location);
-        }
-        //监视地理位置变化
-        manager.requestLocationUpdates(locationProvider, 3000, 1, locationListener);
-    }
-
-    /**
-     * 显示地理位置经度和纬度信息
-     *
-     * @param location
-     */
-    private void showLocation(Location location) {
-        String locationStr = "维度：" + location.getLatitude() + "\n"
-                + "经度：" + location.getLongitude();
-        Toast.makeText(MainActivity.this, "维度：" + location.getLatitude() + "\n"
-                + "经度：" + location.getLongitude(), Toast.LENGTH_SHORT).show();
-        lat = location.getLatitude();
-        lng = location.getLongitude();
-        Log.i("LHD", "location:  " + locationStr);
-
-    }
-
-    /**
-     * LocationListern监听器
-     * 参数：地理位置提供器、监听位置变化的时间间隔、位置变化的距离间隔、LocationListener监听器
-     */
-
-    LocationListener locationListener = new LocationListener() {
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle arg2) {
-
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-
-        }
-
-        @Override
-        public void onLocationChanged(Location location) {
-            //如果位置发生变化,重新显示
-            showLocation(location);
-
-        }
-    };
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (manager != null) {
-            //移除监听器
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Consider calling
-                //    ActivityCompat#requestPermissions
-                // here to request the missing permissions, and then overriding
-                //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                //                                          int[] grantResults)
-                // to handle the case where the user grants the permission. See the documentation
-                // for ActivityCompat#requestPermissions for more details.
-                return;
-            }
-            manager.removeUpdates(locationListener);
-        }
-    }
-}
