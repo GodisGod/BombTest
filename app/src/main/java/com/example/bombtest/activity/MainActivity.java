@@ -34,6 +34,8 @@ import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
+import cn.bmob.v3.listener.ProgressCallback;
+import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -44,7 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btn_discover;
     private TextView tv_discover;
     private ImageView send_img_choose;
-    private Button btn_send_img;
+    private ImageView img_discover;
     private double lat;
     private double lng;
     private EditText edit_text;
@@ -100,12 +102,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_send = (Button) findViewById(R.id.btn_send);
         btn_discover = (Button) findViewById(R.id.btn_discover);
         tv_discover = (TextView) findViewById(R.id.tv_discover);
-        btn_send_img = (Button) findViewById(R.id.btn_send_img);
+        img_discover = (ImageView) findViewById(R.id.Img_discover_img);
 
         btn_send.setOnClickListener(this);
         btn_discover.setOnClickListener(this);
         tv_discover.setOnClickListener(this);
-        btn_send_img.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
     }
 
@@ -171,28 +172,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 if (!img_url.isEmpty()) {
                     final File file = new File(img_url);
                     final BmobFile bmobFile = new BmobFile(file);
-                    HD.LOG("2 " + (bmobFile == null) + " imgulr: " + img_url);
+                    HD.LOG("2 " + (bmobFile == null) + " imgulr: " + file.getAbsolutePath());
 
-                    bmobFile.upload(new UploadFileListener() {
+                    bmobFile.uploadblock(new UploadFileListener() {
                         @Override
                         public void done(BmobException e) {
                             if (e == null) {
                                 HD.TOS("上传成功" + img_url);
                                 Log.i("LHD", "成功：" + img_url);
-//                                message.setIcon(bmobFile);
-//                                message.save(new SaveListener<String>() {
-//                                    @Override
-//                                    public void done(String s, BmobException e) {
-//                                        HD.LOG("纸片上传成功！");
-//                                        if (e == null) {
-//                                            HD.TOS("添加数据成功，返回objectId为： " + s);
-//                                            Log.i("LHD", "成功：" + s);
-//                                        } else {
-//                                            HD.TOS("添加数据失败" + e.getMessage());
-//                                            Log.i("LHD", "失败： " + e.getMessage());
-//                                        }
-//                                    }
-//                                });
+                                message.setIcon(bmobFile);
+                                message.save(new SaveListener<String>() {
+                                    @Override
+                                    public void done(String s, BmobException e) {
+                                        HD.LOG("纸片上传成功！");
+                                        if (e == null) {
+                                            HD.TOS("添加数据成功，返回objectId为： " + s);
+                                            Log.i("LHD", "成功：" + s);
+                                        } else {
+                                            HD.TOS("添加数据失败" + e.getMessage());
+                                            Log.i("LHD", "失败： " + e.getMessage());
+                                        }
+                                    }
+                                });
                             } else {
                                 HD.TOS("纸片上传失败" + e.getMessage());
                                 HD.LOG("失败： " + e.getMessage());
@@ -211,7 +212,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             HD.LOG("onFinish");
                         }
                     });
-
+                    bmobFile.uploadObservable(new ProgressCallback() {
+                        @Override
+                        public void onProgress(Integer integer, long l) {
+                            HD.LOG("uploadObservable: " + l);
+                        }
+                    });
                 }
                 break;
             case R.id.btn_discover:
@@ -220,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String s = edit_text.getText().toString().trim();
 
                 if (s.isEmpty()) {
-                    range = 100;
+                    range = 50;
                 } else {
                     range = Double.parseDouble(edit_text.getText().toString());
                 }
@@ -237,12 +243,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     public void done(List<PaperMessage> list, BmobException e) {
                         if (e == null) {
                             Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
+                            HD.TOS("查询成功：共" + list.size() + "条数据。");
                             StringBuilder sb = new StringBuilder();
                             for (PaperMessage m : list) {
                                 Log.i("LHD", "message: " + m.getText_message());
                                 sb.append(m.getText_message() + "  上传的图片：" + m.getIcon().getFileUrl() + "\n");
                             }
                             tv_discover.setText(sb.toString());
+                            Glide.with(ctx).load(list.get(0).getIcon().getUrl())
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .placeholder(R.mipmap.ic_launcher)
+                                    .centerCrop()  //转换宽高比
+                                    .into(img_discover);
                         } else {
                             Log.i("LHD", "查询失败：" + e.getMessage());
                         }
@@ -250,9 +262,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 });
 
                 break;
-            case R.id.btn_send_img:
 
-                break;
             case R.id.img_send:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 1);
                 break;
