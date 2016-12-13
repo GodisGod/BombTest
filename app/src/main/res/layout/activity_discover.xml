@@ -34,8 +34,7 @@
         android:id="@+id/Img_discover_img"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_gravity="center_horizontal"
-        android:background="#60af" />
+        android:layout_gravity="center_horizontal" />
 
 
     <ScrollView

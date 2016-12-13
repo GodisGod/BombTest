@@ -1,6 +1,7 @@
 package com.example.bombtest.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -14,8 +15,6 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.util.HD;
@@ -105,7 +104,7 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                 Log.i("LHD", "D发现的经纬度： " + "\n" +
                         "D经度：" + lng + "\n" +
                         "D维度：" + lat);
-//                query.setLimit(10);
+                query.setLimit(3);
                 query.findObjects(new FindListener<PaperMessage>() {
                     @Override
                     public void done(List<PaperMessage> list, BmobException e) {
@@ -117,12 +116,18 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                                 Log.i("LHD", "message: " + m.getText_message());
                                 sb.append(m.getText_message() + "  D上传的图片：" + m.getIcon().getFileUrl() + "\n");
                             }
-                            tv_discover.setText(sb.toString());
-                            Glide.with(ctx).load(list.get(0).getIcon().getUrl())
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .placeholder(R.mipmap.ic_launcher)
-                                    .centerCrop()  //转换宽高比
-                                    .into(img_discover);
+                            Intent intent = new Intent(ctx, ChooseScrip.class);
+                            intent.putExtra("imgurl", list.get(0).getIcon().getFileUrl());
+                            intent.putExtra("objectid",list.get(0).getObjectId());
+                            intent.putExtra("text", list.get(0).getText_message());
+                            startActivity(intent);
+                            //UI显示
+//                            tv_discover.setText(sb.toString());
+//                            Glide.with(ctx).load(list.get(0).getIcon().getUrl())
+//                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+//                                    .placeholder(R.mipmap.ic_launcher)
+//                                    .centerCrop()  //转换宽高比
+//                                    .into(img_discover);
                         } else {
                             Log.i("LHD", "查询失败：" + e.getMessage());
                         }

@@ -5,7 +5,9 @@ import android.content.Context;
 import android.graphics.Point;
 import android.view.WindowManager;
 
-import cn.bmob.v3.Bmob;
+import com.example.bombtest.message.MessageHandler;
+
+import cn.bmob.newim.BmobIM;
 import cn.sharesdk.framework.ShareSDK;
 
 /**
@@ -20,14 +22,17 @@ public class APP extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-
+//NewIM初始化
+        BmobIM.init(this);
+        //注册消息接收器
+        BmobIM.registerDefaultMessageHandler(new MessageHandler(this));
         init();
         initsdk();
     }
 
     private void initsdk() {
         ShareSDK.initSDK(this);
-        Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
+//        Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
     }
 
     private void init() {
