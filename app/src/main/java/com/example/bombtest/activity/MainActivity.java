@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -27,14 +26,10 @@ import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.util.HD;
 
 import java.io.File;
-import java.util.List;
 
-import cn.bmob.v3.Bmob;
-import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.ProgressCallback;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
@@ -45,14 +40,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private EditText send_content;
     private Button btn_send;
     private Button jump;
-    private Button btn_discover;
-    private TextView tv_discover;
+    private Button jump_discover;
     private ImageView send_img_choose;
-    private ImageView img_discover;
+
     private double lat;
     private double lng;
-    private EditText edit_text;
-    private double range = 100;
+
     private String img_url;
     //高德定位
     //声明AMapLocationClient类对象
@@ -87,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
+
         ctx = this;
         initview();
 
@@ -96,22 +89,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private void initview() {
-        edit_text = (EditText) findViewById(R.id.range_et);
         send_content = (EditText) findViewById(R.id.ed_content);
 
         send_img_choose = (ImageView) findViewById(R.id.img_send);
 
         jump = (Button) findViewById(R.id.jump_btn);
+        jump_discover = (Button) findViewById(R.id.jump_to_discover);
         btn_send = (Button) findViewById(R.id.btn_send);
-        btn_discover = (Button) findViewById(R.id.btn_discover);
-        tv_discover = (TextView) findViewById(R.id.tv_discover);
-        img_discover = (ImageView) findViewById(R.id.Img_discover_img);
+
 
         btn_send.setOnClickListener(this);
-        btn_discover.setOnClickListener(this);
-        tv_discover.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
         jump.setOnClickListener(this);
+        jump_discover.setOnClickListener(this);
     }
 
 
@@ -229,56 +219,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     });
                 }
                 break;
-            case R.id.btn_discover:
-                mLocationClient.stopLocation();
-                mLocationClient.startLocation();
-                tv_discover.setText("");
-                BmobQuery query = new BmobQuery("PaperMessage");
-                String s = edit_text.getText().toString().trim();
-
-                if (s.isEmpty()) {
-                    range = 50;
-                } else {
-                    range = Double.parseDouble(edit_text.getText().toString());
-                }
-                double a = range / 1000;
-                HD.TOS("搜索范围： " + range + " lat: " + lat + " ,lng: " + lng);
-                query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
-//                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
-                Log.i("LHD", "发现的经纬度： " + "\n" +
-                        "经度：" + lng + "\n" +
-                        "维度：" + lat);
-//                query.setLimit(10);
-                query.findObjects(new FindListener<PaperMessage>() {
-                    @Override
-                    public void done(List<PaperMessage> list, BmobException e) {
-                        if (e == null) {
-                            Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
-                            HD.TOS("查询成功：共" + list.size() + "条数据。");
-                            StringBuilder sb = new StringBuilder();
-                            for (PaperMessage m : list) {
-                                Log.i("LHD", "message: " + m.getText_message());
-                                sb.append(m.getText_message() + "  上传的图片：" + m.getIcon().getFileUrl() + "\n");
-                            }
-                            tv_discover.setText(sb.toString());
-                            Glide.with(ctx).load(list.get(0).getIcon().getUrl())
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .placeholder(R.mipmap.ic_launcher)
-                                    .centerCrop()  //转换宽高比
-                                    .into(img_discover);
-                        } else {
-                            Log.i("LHD", "查询失败：" + e.getMessage());
-                        }
-                    }
-                });
-
-                break;
 
             case R.id.img_send:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 1);
                 break;
             case R.id.jump_btn:
                 startActivity(new Intent(ctx, Loginwithother.class));
+                break;
+            case R.id.jump_to_discover:
+                startActivity(new Intent(ctx, Discover.class));
                 break;
         }
     }

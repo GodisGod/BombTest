@@ -5,6 +5,7 @@ import android.content.Context;
 import android.graphics.Point;
 import android.view.WindowManager;
 
+import cn.bmob.v3.Bmob;
 import cn.sharesdk.framework.ShareSDK;
 
 /**
@@ -26,6 +27,7 @@ public class APP extends Application {
 
     private void initsdk() {
         ShareSDK.initSDK(this);
+        Bmob.initialize(this, "9c025fdf83b8cb9dcded051b04f741dc");
     }
 
     private void init() {

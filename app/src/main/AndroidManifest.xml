@@ -79,7 +79,8 @@
             android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".activity.Loginwithother"></activity>
+        <activity android:name=".activity.Loginwithother" />
+        <activity android:name=".activity.Discover"></activity>
     </application>
 
 </manifest>
