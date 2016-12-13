@@ -10,7 +10,7 @@ import cn.bmob.v3.datatype.BmobGeoPoint;
 public class PaperMessage extends BmobObject {
     private String user_id;//用户ID
     private String text_message;//文字
-    private String audio;//语音
+    private BmobFile audio;//语音
     private BmobFile icon;//图片
     private BmobGeoPoint gpsAdd;//地理位置
 
@@ -22,11 +22,11 @@ public class PaperMessage extends BmobObject {
         this.user_id = user_id;
     }
 
-    public String getAudio() {
+    public BmobFile getAudio() {
         return audio;
     }
 
-    public void setAudio(String audio) {
+    public void setAudio(BmobFile audio) {
         this.audio = audio;
     }
 

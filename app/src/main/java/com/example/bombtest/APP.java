@@ -5,6 +5,8 @@ import android.content.Context;
 import android.graphics.Point;
 import android.view.WindowManager;
 
+import cn.sharesdk.framework.ShareSDK;
+
 /**
  * Created by 鸿达 on 2016/12/12.
  */
@@ -17,7 +19,13 @@ public class APP extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
         init();
+        initsdk();
+    }
+
+    private void initsdk() {
+        ShareSDK.initSDK(this);
     }
 
     private void init() {

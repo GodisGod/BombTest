@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Context ctx;
     private EditText send_content;
     private Button btn_send;
+    private Button jump;
     private Button btn_discover;
     private TextView tv_discover;
     private ImageView send_img_choose;
@@ -99,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         send_img_choose = (ImageView) findViewById(R.id.img_send);
 
+        jump = (Button) findViewById(R.id.jump_btn);
         btn_send = (Button) findViewById(R.id.btn_send);
         btn_discover = (Button) findViewById(R.id.btn_discover);
         tv_discover = (TextView) findViewById(R.id.tv_discover);
@@ -108,6 +111,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn_discover.setOnClickListener(this);
         tv_discover.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
+        jump.setOnClickListener(this);
     }
 
 
@@ -155,6 +159,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_send:
                 final String content = send_content.getText().toString();
                 final PaperMessage message = new PaperMessage();
+                //TODO 模拟添加用户id
+                message.setUser_id(Build.USER);
+
                 if (!content.isEmpty()) {
                     //添加文字
                     message.setText_message(content);
@@ -181,6 +188,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 HD.TOS("上传成功" + img_url);
                                 Log.i("LHD", "成功：" + img_url);
                                 message.setIcon(bmobFile);
+                                //TODO 模拟添加语音
+                                message.setAudio(bmobFile);
                                 message.save(new SaveListener<String>() {
                                     @Override
                                     public void done(String s, BmobException e) {
@@ -221,6 +230,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 break;
             case R.id.btn_discover:
+                mLocationClient.stopLocation();
+                mLocationClient.startLocation();
                 tv_discover.setText("");
                 BmobQuery query = new BmobQuery("PaperMessage");
                 String s = edit_text.getText().toString().trim();
@@ -231,7 +242,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     range = Double.parseDouble(edit_text.getText().toString());
                 }
                 double a = range / 1000;
-                HD.TOS("搜索范围： " + range);
+                HD.TOS("搜索范围： " + range + " lat: " + lat + " ,lng: " + lng);
                 query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
 //                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
                 Log.i("LHD", "发现的经纬度： " + "\n" +
@@ -266,6 +277,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.img_send:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 1);
                 break;
+            case R.id.jump_btn:
+                startActivity(new Intent(ctx, Loginwithother.class));
+                break;
         }
     }
 
@@ -284,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         }
     }
+
 
     @Override
     protected void onDestroy() {
