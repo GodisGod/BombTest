@@ -8,6 +8,7 @@ import cn.bmob.v3.datatype.BmobGeoPoint;
  * Created by 鸿达 on 2016/11/17.
  */
 public class PaperMessage extends BmobObject {
+
     private String user_id;//用户ID
     private String user_name;//用户名字
     private BmobFile user_icon;//用户头像
