@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -23,16 +22,17 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.PaperMessage;
+import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
-import java.io.File;
+import java.util.List;
 
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
-import cn.bmob.v3.listener.ProgressCallback;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UploadFileListener;
+import cn.bmob.v3.listener.UploadBatchListener;
+import io.rong.imkit.RongIM;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -41,7 +41,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button btn_send;
     private Button jump;
     private Button jump_discover;
+    private Button jump_conversation_list;
     private ImageView send_img_choose;
+    private ImageView choose_user_icon;
 
     private double lat;
     private double lng;
@@ -92,16 +94,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         send_content = (EditText) findViewById(R.id.ed_content);
 
         send_img_choose = (ImageView) findViewById(R.id.img_send);
+        choose_user_icon = (ImageView) findViewById(R.id.img_user_icon);
 
         jump = (Button) findViewById(R.id.jump_btn);
         jump_discover = (Button) findViewById(R.id.jump_to_discover);
         btn_send = (Button) findViewById(R.id.btn_send);
-
+        jump_conversation_list = (Button) findViewById(R.id.jump_conversation_list);
 
         btn_send.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
+        choose_user_icon.setOnClickListener(this);
         jump.setOnClickListener(this);
         jump_discover.setOnClickListener(this);
+        jump_conversation_list.setOnClickListener(this);
+        Glide.with(ctx).load(Constant.userIcon)
+                .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .placeholder(R.mipmap.ic_launcher)
+                .centerCrop()  //转换宽高比
+                .into(choose_user_icon);
     }
 
 
@@ -150,13 +160,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final String content = send_content.getText().toString();
                 final PaperMessage message = new PaperMessage();
                 //TODO 模拟添加用户id
-                message.setUser_id(Build.USER);
-
+                message.setUser_id(Constant.userId);  //添加用户ID
+                message.setUser_name(Constant.userName);//添加用户名
                 if (!content.isEmpty()) {
                     //添加文字
-                    message.setText_message(content);
+                    message.setSend_text_message(content);//添加发送的文本
                     //添加经纬度
-                    message.setGpsAdd(new BmobGeoPoint(lng, lat));
+                    message.setGpsAdd(new BmobGeoPoint(lng, lat));//添加经纬度
                     HD.LOG("添加的经纬度： " + "\n" +
                             "经度：" + lng + "\n" +
                             "维度：" + lat);
@@ -167,19 +177,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 HD.LOG("1");
                 //添加图片
                 if (!img_url.isEmpty()) {
-                    final File file = new File(img_url);
-                    final BmobFile bmobFile = new BmobFile(file);
-                    HD.LOG("2 " + (bmobFile == null) + " imgulr: " + file.getAbsolutePath());
 
-                    bmobFile.uploadblock(new UploadFileListener() {
+//todo 批量长传文件
+                    //详细示例可查看BmobExample工程中BmobFileActivity类
+                    final String[] filePaths = new String[2];
+                    filePaths[0] = img_url;
+                    filePaths[1] = Constant.userIcon;
+                    HD.LOG("2 " + " imgulr: " + img_url + "  userIcon: " + Constant.userIcon);
+                    BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
+
                         @Override
-                        public void done(BmobException e) {
-                            if (e == null) {
-                                HD.TOS("上传成功" + img_url);
-                                Log.i("LHD", "成功：" + img_url);
-                                message.setIcon(bmobFile);
+                        public void onSuccess(List<BmobFile> files, List<String> urls) {
+                            //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
+                            //2、urls-上传文件的完整url地址
+                            if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
+                                //do something
+                                HD.TOS("上传成功" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
+                                Log.i("LHD", "成功：" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
+                                message.setSend_img_message(files.get(0));//添加发送的图片
+                                message.setSend_audio(files.get(0));//添加发送的音频
+                                message.setUser_icon(files.get(1));//添加用户头像
                                 //TODO 模拟添加语音
-                                message.setAudio(bmobFile);
                                 message.save(new SaveListener<String>() {
                                     @Override
                                     public void done(String s, BmobException e) {
@@ -193,28 +211,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                         }
                                     }
                                 });
-                            } else {
-                                HD.TOS("纸片上传失败" + e.getMessage());
-                                HD.LOG("失败： " + e.getMessage());
                             }
                         }
 
                         @Override
-                        public void onProgress(Integer value) {
-                            super.onProgress(value);
-                            HD.LOG("progress: " + value);
+                        public void onError(int statuscode, String errormsg) {
+                            HD.LOG("错误码" + statuscode + ",错误描述：" + errormsg);
+                            HD.TOS("纸片上传失败" + errormsg);
+                            HD.LOG("失败： " + errormsg);
                         }
 
                         @Override
-                        public void onFinish() {
-                            super.onFinish();
-                            HD.LOG("onFinish");
-                        }
-                    });
-                    bmobFile.uploadObservable(new ProgressCallback() {
-                        @Override
-                        public void onProgress(Integer integer, long l) {
-                            HD.LOG("uploadObservable: " + l);
+                        public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+                            //1、curIndex--表示当前第几个文件正在上传
+                            //2、curPercent--表示当前上传文件的进度值（百分比）
+                            //3、total--表示总的上传文件数
+                            //4、totalPercent--表示总的上传进度（百分比）
+                            HD.TOS("正在上传： " + curIndex + "  进度： " + curPercent);
+                            HD.LOG("正在上传： " + curIndex + "  进度： " + curPercent);
                         }
                     });
                 }
@@ -229,6 +243,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.jump_to_discover:
                 startActivity(new Intent(ctx, Discover.class));
                 break;
+            case R.id.jump_conversation_list:
+                if (RongIM.getInstance() != null) {
+                    HD.LOG("jump_conversation_list");
+                    RongIM.getInstance().startConversationList(MainActivity.this);
+                }
+                break;
         }
     }
 
@@ -238,7 +258,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
                 img_url = data.getStringExtra("imgurl");
-
                 Glide.with(ctx).load(img_url)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.mipmap.ic_launcher)

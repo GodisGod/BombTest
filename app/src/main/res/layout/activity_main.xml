@@ -21,6 +21,13 @@
         android:layout_height="100dp"
         android:background="#6f0a" />
 
+    <ImageView
+        android:id="@+id/img_user_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="#60af" />
+
     <Button
         android:id="@+id/btn_send"
         android:layout_width="match_parent"
@@ -33,10 +40,17 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="跳转到发现页面" />
+
     <Button
         android:id="@+id/jump_btn"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="跳转到分享页面" />
+
+    <Button
+        android:id="@+id/jump_conversation_list"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="跳转到消息列表" />
 
 </LinearLayout>

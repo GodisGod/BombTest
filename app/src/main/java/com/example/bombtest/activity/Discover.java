@@ -1,21 +1,18 @@
 package com.example.bombtest.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.util.HD;
@@ -29,8 +26,6 @@ import cn.bmob.v3.listener.FindListener;
 
 public class Discover extends AppCompatActivity implements View.OnClickListener {
     private Button btn_discover;
-    private TextView tv_discover;
-    private ImageView img_discover;
     private EditText edit_text;
 
     private double range = 100;
@@ -78,18 +73,14 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
     private void initView() {
         edit_text = (EditText) findViewById(R.id.range_et);
         btn_discover = (Button) findViewById(R.id.btn_discover);
-        tv_discover = (TextView) findViewById(R.id.tv_discover);
-        img_discover = (ImageView) findViewById(R.id.Img_discover_img);
         btn_discover.setOnClickListener(this);
-        tv_discover.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_discover:
-
-                tv_discover.setText("");
+                startActivity(new Intent(ctx, ChooseScrip.class));
                 BmobQuery query = new BmobQuery("PaperMessage");
                 String s = edit_text.getText().toString().trim();
 
@@ -105,7 +96,7 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                 Log.i("LHD", "D发现的经纬度： " + "\n" +
                         "D经度：" + lng + "\n" +
                         "D维度：" + lat);
-//                query.setLimit(10);
+                query.setLimit(3);
                 query.findObjects(new FindListener<PaperMessage>() {
                     @Override
                     public void done(List<PaperMessage> list, BmobException e) {
@@ -114,36 +105,24 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                             HD.TOS("查询成功：共" + list.size() + "条数据。");
                             StringBuilder sb = new StringBuilder();
                             for (PaperMessage m : list) {
-                                Log.i("LHD", "message: " + m.getText_message());
-                                sb.append(m.getText_message() + "  D上传的图片：" + m.getIcon().getFileUrl() + "\n");
+                                Log.i("LHD", "message: " + m.getSend_text_message());
+                                sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
                             }
-                            tv_discover.setText(sb.toString());
-                            Glide.with(ctx).load(list.get(0).getIcon().getUrl())
-                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .placeholder(R.mipmap.ic_launcher)
-                                    .centerCrop()  //转换宽高比
-                                    .into(img_discover);
+                            Intent intent = new Intent(ctx, ChooseScrip.class);
+                            intent.putExtra("userId",list.get(0).getUser_id());
+                            intent.putExtra("userName",list.get(0).getUser_name());
+                            intent.putExtra("userIcon",list.get(0).getUser_icon());
+                            intent.putExtra("objectid", list.get(0).getObjectId());
+                            intent.putExtra("imgurl", list.get(0).getSend_img_message().getFileUrl());
+                            intent.putExtra("text", list.get(0).getSend_text_message());
+                            intent.putExtra("audio", list.get(0).getSend_audio());
+                            startActivity(intent);
+
                         } else {
                             Log.i("LHD", "查询失败：" + e.getMessage());
                         }
                     }
                 });
-//                LocationUtil.getCurrentLocation(new LocationCallbackListener() {
-//
-//                    @Override
-//                    public void onFinish(double mlng, double mlat) {
-//                        lat = mlat;
-//                        lng = mlng;
-//
-//                    }
-//
-//                    @Override
-//                    public void onError(String e) {
-//                        HD.LOG("eee: " + e);
-//                    }
-//                });
-//
-//                LocationUtil.stopLocate();
                 break;
         }
     }
