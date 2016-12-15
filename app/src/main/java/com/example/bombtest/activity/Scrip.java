@@ -15,7 +15,6 @@ import com.example.bombtest.R;
 import com.example.bombtest.util.HD;
 
 import io.rong.imkit.RongIM;
-import io.rong.imlib.model.Conversation;
 
 public class Scrip extends AppCompatActivity implements View.OnClickListener {
 
@@ -103,10 +102,10 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
                 //todo 开启私聊页面
                 if (RongIM.getInstance() != null) {
                     HD.LOG("开启私聊页面");
-//                    RongIM.getInstance().startPrivateChat(ctx, userId, userName);
-                    RongIM.getInstance().startConversation(ctx, Conversation.ConversationType.PRIVATE,userId,userName);
+                    RongIM.getInstance().startPrivateChat(ctx, userId, userName);
+//                    RongIM.getInstance().startConversation(ctx, Conversation.ConversationType.PRIVATE, userId, userName);
                     //todo 接收预置消息
-
+                    finish();
 //            getMessages();
                 }
                 break;
@@ -114,5 +113,11 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
                 finish();
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 }

@@ -58,10 +58,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private void startIM() {
-        uploadUserinfo();
-        Log.i("LHD", "LoginActivity  " + Constant.token);
-        RongIM.connect(Constant.token, new RongIMClient.ConnectCallback() {
+    private void startIM(String token) {
+//        uploadUserinfo();
+        Log.i("LHD", "LoginActivity  " + token);
+        RongIM.connect(token, new RongIMClient.ConnectCallback() {
 
             /**
              * Token 错误。可以从下面两点检查 1.  Token 是否过期，如果过期您需要向 App Server 重新请求一个新的 Token
@@ -145,28 +145,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         switch (view.getId()) {
             case R.id.choose_user1:
                 //大屏三星手机
-                Constant.token = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
+//                Constant.token = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
                 //对应的用户ID为123
                 Constant.userId = "001";
                 Constant.userName = "测试用户1";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
-                startIM();
+                startIM(Constant.token1);
                 break;
             case R.id.choose_user2:
-                Constant.token = "Le7e95ydLq3zAtF18Y75JPgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEIA0njTEMpsGR9IFvu+l2dQ7mA+Ioh8twA==";
+//                Constant.token = "Le7e95ydLq3zAtF18Y75JPgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEIA0njTEMpsGR9IFvu+l2dQ7mA+Ioh8twA==";
                 //对应的用户ID为222
                 Constant.userId = "002";
                 Constant.userName = "测试用户2";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
-                startIM();
+                startIM(Constant.token2);
                 break;
             case R.id.choose_user3:
-                Constant.token = "4cwt+PWBSJMuRqMHFaIszfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEDZyvJvNaqMNb7WR5CjwdC87mA+Ioh8twA==";
+//                Constant.token = "4cwt+PWBSJMuRqMHFaIszfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEDZyvJvNaqMNb7WR5CjwdC87mA+Ioh8twA==";
                 //对应的用户ID为001
                 Constant.userId = "003";
                 Constant.userName = "测试用户3";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
-                startIM();
+                startIM(Constant.token3);
                 break;
             case R.id.chooser_user_icon:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 2);

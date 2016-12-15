@@ -15,6 +15,7 @@ import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.PaperMessage;
+import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
 import java.util.List;
@@ -106,16 +107,19 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                             for (PaperMessage m : list) {
                                 Log.i("LHD", "message: " + m.getSend_text_message());
                                 sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
+                                if (m.getUser_id() != Constant.userId) {
+                                    Intent intent = new Intent(ctx, ChooseScrip.class);
+                                    intent.putExtra("userId", m.getUser_id());
+                                    intent.putExtra("userName", m.getUser_name());
+                                    intent.putExtra("userIcon", m.getUser_icon().getFileUrl());
+                                    intent.putExtra("objectid", m.getObjectId());
+                                    intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
+                                    intent.putExtra("text", m.getSend_text_message());
+                                    intent.putExtra("audio", m.getSend_audio());
+                                    startActivity(intent);
+                                }
                             }
-                            Intent intent = new Intent(ctx, ChooseScrip.class);
-                            intent.putExtra("userId",list.get(0).getUser_id());
-                            intent.putExtra("userName",list.get(0).getUser_name());
-                            intent.putExtra("userIcon",list.get(0).getUser_icon().getFileUrl());
-                            intent.putExtra("objectid", list.get(0).getObjectId());
-                            intent.putExtra("imgurl", list.get(0).getSend_img_message().getFileUrl());
-                            intent.putExtra("text", list.get(0).getSend_text_message());
-                            intent.putExtra("audio", list.get(0).getSend_audio());
-                            startActivity(intent);
+
 
                         } else {
                             Log.i("LHD", "查询失败：" + e.getMessage());

@@ -8,7 +8,9 @@ public class Constant {
      * token 的主要作用是身份授权和安全，因此不能通过客户端直接访问融云服务器获取 token，
      * 您必须通过 Server API 从融云服务器 获取 token 返回给您的 App，并在之后连接时使用
      */
-    public static String token = "";
+    public static final String token1 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
+    public static final String token2 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
+    public static final String token3 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
     //对应的用户ID为001
     public static String userId = "";
     public static String userName = "";
