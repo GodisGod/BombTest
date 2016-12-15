@@ -53,4 +53,10 @@
         android:layout_height="50dp"
         android:text="跳转到消息列表" />
 
+    <Button
+        android:id="@+id/query_userinfo"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="根据ID查询Userinfo" />
+
 </LinearLayout>

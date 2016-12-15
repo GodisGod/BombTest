@@ -23,4 +23,11 @@ public class HD {
             Log.i(TAG, str);
         }
     }
+    public static void TLOG(String str) {
+        if (debug) {
+            Log.i(TAG, str);
+            Toast.makeText(APP.getContext(), str, Toast.LENGTH_SHORT).show();
+        }
+    }
+
 }

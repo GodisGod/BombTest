@@ -7,9 +7,18 @@ import cn.bmob.v3.datatype.BmobFile;
  * Created by 鸿达 on 2016/12/13.
  */
 public class User extends BmobObject {
-    private String user_name;
-    private BmobFile user_icon;
-    private String user_id;
+    private String user_id;  //用户ID
+    private String user_name;//用户名
+    private BmobFile user_icon;//用户头像
+    private String user_sign;//用户签名
+
+    public String getUser_sign() {
+        return user_sign;
+    }
+
+    public void setUser_sign(String user_sign) {
+        this.user_sign = user_sign;
+    }
 
     public String getUser_name() {
         return user_name;

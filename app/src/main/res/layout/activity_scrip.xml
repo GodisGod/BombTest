@@ -5,7 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:padding="10dp"
     tools:context="com.example.bombtest.activity.Scrip">
+
+    <ImageView
+        android:id="@+id/target_user_icon"
+        android:layout_width="50dp"
+        android:layout_height="50dp" />
 
     <ImageView
         android:id="@+id/scrip_image"
@@ -15,9 +21,18 @@
         android:layout_marginTop="20dp" />
 
     <TextView
+
         android:id="@+id/scrip_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
+        android:gravity="center"
         android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/huifu"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:text="回复" />
 </LinearLayout>

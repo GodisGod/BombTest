@@ -80,7 +80,6 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_discover:
-                startActivity(new Intent(ctx, ChooseScrip.class));
                 BmobQuery query = new BmobQuery("PaperMessage");
                 String s = edit_text.getText().toString().trim();
 
@@ -111,7 +110,7 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                             Intent intent = new Intent(ctx, ChooseScrip.class);
                             intent.putExtra("userId",list.get(0).getUser_id());
                             intent.putExtra("userName",list.get(0).getUser_name());
-                            intent.putExtra("userIcon",list.get(0).getUser_icon());
+                            intent.putExtra("userIcon",list.get(0).getUser_icon().getFileUrl());
                             intent.putExtra("objectid", list.get(0).getObjectId());
                             intent.putExtra("imgurl", list.get(0).getSend_img_message().getFileUrl());
                             intent.putExtra("text", list.get(0).getSend_text_message());

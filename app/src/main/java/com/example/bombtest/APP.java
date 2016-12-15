@@ -43,6 +43,7 @@ public class APP extends Application {
              * IMKit SDK调用第一步 初始化
              */
             RongIM.init(this);
+
             Log.i("LHD", " RongIM.init(this);");
             if (getApplicationInfo().packageName.equals(getCurProcessName(getApplicationContext()))) {
 

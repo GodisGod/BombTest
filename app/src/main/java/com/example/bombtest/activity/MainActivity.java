@@ -25,11 +25,15 @@ import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
+import org.json.JSONArray;
+
 import java.util.List;
 
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadBatchListener;
 import io.rong.imkit.RongIM;
@@ -42,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button jump;
     private Button jump_discover;
     private Button jump_conversation_list;
+    private Button query_userinfo;
     private ImageView send_img_choose;
     private ImageView choose_user_icon;
 
@@ -100,13 +105,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         jump_discover = (Button) findViewById(R.id.jump_to_discover);
         btn_send = (Button) findViewById(R.id.btn_send);
         jump_conversation_list = (Button) findViewById(R.id.jump_conversation_list);
-
+        query_userinfo = (Button) findViewById(R.id.query_userinfo);
         btn_send.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
         choose_user_icon.setOnClickListener(this);
         jump.setOnClickListener(this);
         jump_discover.setOnClickListener(this);
         jump_conversation_list.setOnClickListener(this);
+        query_userinfo.setOnClickListener(this);
         Glide.with(ctx).load(Constant.userIcon)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .placeholder(R.mipmap.ic_launcher)
@@ -248,6 +254,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     HD.LOG("jump_conversation_list");
                     RongIM.getInstance().startConversationList(MainActivity.this);
                 }
+                break;
+            case R.id.query_userinfo:
+                BmobQuery query = new BmobQuery("User");
+                query.addWhereEqualTo("user_id", "222");
+//        query.setLimit(2);
+                query.order("createAt");
+                query.findObjectsByTable(new QueryListener<JSONArray>() {
+                    @Override
+                    public void done(JSONArray jsonArray, BmobException e) {
+                        if (e == null) {
+                            HD.TLOG("查詢成功：" + jsonArray.toString());
+                        } else {
+                            HD.TLOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
+                        }
+                    }
+                });
                 break;
         }
     }
