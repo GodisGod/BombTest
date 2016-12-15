@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Button query_userinfo;
     private ImageView send_img_choose;
     private ImageView choose_user_icon;
-
+    private TextView title;
     private double lat;
     private double lng;
 
@@ -97,7 +98,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initview() {
         send_content = (EditText) findViewById(R.id.ed_content);
-
+        title = (TextView) findViewById(R.id.main_title);
+        title.setText("当前用户： " + Constant.userId + "  " + Constant.userName);
         send_img_choose = (ImageView) findViewById(R.id.img_send);
         choose_user_icon = (ImageView) findViewById(R.id.img_user_icon);
 

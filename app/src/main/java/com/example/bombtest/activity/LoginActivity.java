@@ -1,10 +1,16 @@
 package com.example.bombtest.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.User;
 import com.example.bombtest.constant.Constant;
@@ -21,14 +27,21 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private Context ctx;
     private UserInfoProvider userInfoProvider = null;
+    private Button user1_123;
+    private Button user1_222;
+    private Button user1_001;
+    private ImageView choose_user_icon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        ctx = this;
+        initView();
         //todo 保存用户信息到Bmob
         userInfoProvider = new UserInfoProvider();
         /**
@@ -42,8 +55,11 @@ public class LoginActivity extends AppCompatActivity {
          * @see UserInfoProvider
          */
         RongIM.setUserInfoProvider(userInfoProvider, true);
-        uploadUserinfo();
 
+    }
+
+    private void startIM() {
+        uploadUserinfo();
         Log.i("LHD", "LoginActivity  " + Constant.token);
         RongIM.connect(Constant.token, new RongIMClient.ConnectCallback() {
 
@@ -76,6 +92,18 @@ public class LoginActivity extends AppCompatActivity {
                 Log.i("LHD", "onError: " + errorCode);
             }
         });
+    }
+
+    private void initView() {
+        user1_001 = (Button) findViewById(R.id.choose_user1);
+        user1_123 = (Button) findViewById(R.id.choose_user2);
+        user1_222 = (Button) findViewById(R.id.choose_user3);
+        choose_user_icon = (ImageView) findViewById(R.id.chooser_user_icon);
+        user1_001.setOnClickListener(this);
+        user1_123.setOnClickListener(this);
+        user1_222.setOnClickListener(this);
+        choose_user_icon.setOnClickListener(this);
+
     }
 
     private void uploadUserinfo() {
@@ -112,4 +140,52 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.choose_user1:
+                //大屏三星手机
+                Constant.token = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
+                //对应的用户ID为123
+                Constant.userId = "001";
+                Constant.userName = "测试用户1";
+                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                startIM();
+                break;
+            case R.id.choose_user2:
+                Constant.token = "Le7e95ydLq3zAtF18Y75JPgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEIA0njTEMpsGR9IFvu+l2dQ7mA+Ioh8twA==";
+                //对应的用户ID为222
+                Constant.userId = "002";
+                Constant.userName = "测试用户2";
+                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                startIM();
+                break;
+            case R.id.choose_user3:
+                Constant.token = "4cwt+PWBSJMuRqMHFaIszfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEDZyvJvNaqMNb7WR5CjwdC87mA+Ioh8twA==";
+                //对应的用户ID为001
+                Constant.userId = "003";
+                Constant.userName = "测试用户3";
+                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                startIM();
+                break;
+            case R.id.chooser_user_icon:
+                startActivityForResult(new Intent(ctx, PhotosWall.class), 2);
+                break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 2) {
+            if (resultCode == RESULT_OK) {
+                Constant.userIcon = data.getStringExtra("imgurl");
+                Glide.with(ctx).load(Constant.userIcon)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .placeholder(R.mipmap.ic_launcher)
+                        .centerCrop()  //转换宽高比
+                        .into(choose_user_icon);
+            }
+        }
+    }
 }
