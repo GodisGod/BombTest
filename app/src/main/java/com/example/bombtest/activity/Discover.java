@@ -33,6 +33,7 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
     private double lat;
     private double lng;
     private Context ctx;
+    private Intent intent;
     //高德定位
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -107,8 +108,9 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                             for (PaperMessage m : list) {
                                 Log.i("LHD", "message: " + m.getSend_text_message());
                                 sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
+                                HD.TLOG(sb.toString());
                                 if (m.getUser_id() != Constant.userId) {
-                                    Intent intent = new Intent(ctx, ChooseScrip.class);
+                                    intent = new Intent(ctx, ChooseScrip.class);
                                     intent.putExtra("userId", m.getUser_id());
                                     intent.putExtra("userName", m.getUser_name());
                                     intent.putExtra("userIcon", m.getUser_icon().getFileUrl());
@@ -116,10 +118,10 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                                     intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
                                     intent.putExtra("text", m.getSend_text_message());
                                     intent.putExtra("audio", m.getSend_audio());
-                                    startActivity(intent);
+                                    break;
                                 }
                             }
-
+                            startActivity(intent);
 
                         } else {
                             Log.i("LHD", "查询失败：" + e.getMessage());

@@ -64,9 +64,4 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         finish();
     }
 
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
 }
