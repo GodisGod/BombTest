@@ -29,10 +29,26 @@
         android:gravity="center"
         android:textSize="20sp" />
 
-    <Button
-        android:id="@+id/huifu"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:text="回复" />
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/huifu"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="回复" />
+
+        <Button
+            android:id="@+id/gone_with_wind"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:layout_weight="1"
+            android:text="随风" />
+    </LinearLayout>
+
 </LinearLayout>

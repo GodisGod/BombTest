@@ -48,7 +48,7 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
                 }
             }
         });
-        return userInfo;
+        return null;
     }
 
     private UserInfo anlyUserinfo(JSONArray jsonArray) {
