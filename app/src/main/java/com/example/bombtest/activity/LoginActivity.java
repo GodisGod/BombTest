@@ -34,6 +34,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button user1_123;
     private Button user1_222;
     private Button user1_001;
+    private Button pre_user;
     private ImageView choose_user_icon;
 
     @Override
@@ -87,10 +88,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         user1_001 = (Button) findViewById(R.id.choose_user1);
         user1_123 = (Button) findViewById(R.id.choose_user2);
         user1_222 = (Button) findViewById(R.id.choose_user3);
+        pre_user = (Button) findViewById(R.id.choose_preuser);
         choose_user_icon = (ImageView) findViewById(R.id.chooser_user_icon);
         user1_001.setOnClickListener(this);
         user1_123.setOnClickListener(this);
         user1_222.setOnClickListener(this);
+        pre_user.setOnClickListener(this);
         choose_user_icon.setOnClickListener(this);
 
     }
@@ -152,6 +155,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 break;
             case R.id.chooser_user_icon:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 2);
+                break;
+            case R.id.choose_preuser:
+                String token = null;
+
+                if (DemoContext.getInstance() != null) {
+
+                    token = DemoContext.getInstance().getSharedPreferences().getString("USER_TOKEN", "default");
+                }
+                startIM(token);
                 break;
         }
     }

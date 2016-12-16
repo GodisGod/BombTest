@@ -41,5 +41,11 @@
         android:layout_height="50dp"
         android:text="选择用户003" />
 
+    <Button
+        android:id="@+id/choose_preuser"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="选择上一个用户" />
+
 
 </LinearLayout>
