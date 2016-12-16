@@ -49,7 +49,7 @@
         android:theme="@style/AppTheme">
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="59cf78119de99d611b1e8ddcf8a59748" />
+            android:value="19f9cd3fe855019900ef57af4e2c7f75" />
 
         <activity
             android:name=".activity.LoginActivity"

@@ -2,6 +2,7 @@ package com.example.bombtest.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -11,10 +12,10 @@ import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.example.bombtest.DemoContext;
 import com.example.bombtest.R;
 import com.example.bombtest.bean.User;
 import com.example.bombtest.constant.Constant;
-import com.example.bombtest.provider.UserInfoProvider;
 import com.example.bombtest.util.HD;
 
 import java.io.File;
@@ -30,7 +31,6 @@ import io.rong.imlib.RongIMClient;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     private Context ctx;
-    private UserInfoProvider userInfoProvider = null;
     private Button user1_123;
     private Button user1_222;
     private Button user1_001;
@@ -42,25 +42,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         ctx = this;
         initView();
-        //todo 保存用户信息到Bmob
-        userInfoProvider = new UserInfoProvider();
-        /**
-         * 设置用户信息的提供者，供 RongIM 调用获取用户名称和头像信息。
-         *
-         *  UserInfoProvider 用户信息提供者。
-         *  isCacheUserInfo  设置是否由 IMKit 来缓存用户信息。<br>
-         *                         如果 App 提供的 UserInfoProvider
-         *                         每次都需要通过网络请求用户数据，而不是将用户数据缓存到本地内存，会影响用户信息的加载速度；<br>
-         *                         此时最好将本参数设置为 true，由 IMKit 将用户信息缓存到本地内存中。
-         * @see UserInfoProvider
-         */
-        RongIM.setUserInfoProvider(userInfoProvider, true);
-
     }
 
     private void startIM(String token) {
-//        uploadUserinfo();
+        uploadUserinfo();
         Log.i("LHD", "LoginActivity  " + token);
+        SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+        edit.putString("USER_TOKEN", token);
+        edit.apply();
         RongIM.connect(token, new RongIMClient.ConnectCallback() {
 
             /**

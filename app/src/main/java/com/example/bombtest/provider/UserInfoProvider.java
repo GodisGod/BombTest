@@ -42,6 +42,7 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
                      *
                      * @param userInfo 需要更新的用户缓存数据。
                      */
+                    HD.TLOG("userinfo:  " + userInfo.getName() + "  " + userInfo.getUserId() + "  " + userInfo.getPortraitUri());
                     RongIM.getInstance().refreshUserInfoCache(userInfo);
                 } else {
                     HD.TLOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
@@ -52,6 +53,7 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
     }
 
     private UserInfo anlyUserinfo(JSONArray jsonArray) {
+        UserInfo userInfo = null;
         try {
             JSONObject object = jsonArray.getJSONObject(0);
             String user_name = object.getString("user_name");
@@ -59,7 +61,7 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
             JSONObject user_icon_object = object.getJSONObject("user_icon");
             String user_icon = user_icon_object.getString("url");
             Uri uri = Uri.parse(user_icon);
-            UserInfo userInfo = new UserInfo(user_id, user_name, uri);
+            userInfo = new UserInfo(user_id, user_name, uri);
         } catch (JSONException e) {
             e.printStackTrace();
         }

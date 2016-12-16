@@ -8,7 +8,7 @@ import io.rong.imlib.model.Message;
 /**
  * Created by HONGDA on 2016/12/16.
  */
-public class ScripReceiveMessageListener implements RongIMClient.OnReceiveMessageListener{
+public class ScripReceiveMessageListener implements RongIMClient.OnReceiveMessageListener {
     /**
      * 收到消息的处理。
      *
@@ -19,7 +19,8 @@ public class ScripReceiveMessageListener implements RongIMClient.OnReceiveMessag
     @Override
     public boolean onReceived(Message message, int left) {
         //开发者根据自己需求自行处理
-        HD.TLOG("boolean onReceived: "+message.getContent().toString());
+        HD.TLOG("boolean onReceived1: " + message.getTargetId() + "  " + message.getSenderUserId() + " " + message.getContent().toString());
+
         return false;
     }
 }

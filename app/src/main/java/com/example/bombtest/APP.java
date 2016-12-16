@@ -12,6 +12,7 @@ import com.example.bombtest.listener.ScripConversationBehaviorListener;
 import com.example.bombtest.listener.ScripConversationListBehaviorListener;
 import com.example.bombtest.listener.ScripReceiveMessageListener;
 import com.example.bombtest.listener.ScripSendMessageListener;
+import com.example.bombtest.provider.UserInfoProvider;
 
 import cn.bmob.v3.Bmob;
 import cn.sharesdk.framework.ShareSDK;
@@ -21,7 +22,6 @@ import io.rong.imkit.RongIM;
  * Created by 鸿达 on 2016/12/12.
  */
 public class APP extends Application {
-
     private static Context sContext;
     private static APP sInstance;
     public static int SCREEN_WIDTH;
@@ -30,6 +30,7 @@ public class APP extends Application {
     private ScripConnectStatusListener connectStatusListener;
     private ScripConversationListBehaviorListener conversationListBehaviorListener;
     private ScripConversationBehaviorListener conversationBehaviorListener;
+    private UserInfoProvider userInfoProvider;
 
     @Override
     public void onCreate() {
@@ -63,17 +64,33 @@ public class APP extends Application {
              */
             RongIM.init(this);
             RongIM.getInstance().setSendMessageListener(listener);
-            RongIM.setOnReceiveMessageListener(receiveMessageListener);
+//            RongIM.setOnReceiveMessageListener(receiveMessageListener);
             RongIM.setConnectionStatusListener(connectStatusListener);
             RongIM.setConversationListBehaviorListener(conversationListBehaviorListener);
             RongIM.setConversationBehaviorListener(conversationBehaviorListener);
-            
+            initUserProvider();
             Log.i("LHD", " RongIM.init(this);");
             if (getApplicationInfo().packageName.equals(getCurProcessName(getApplicationContext()))) {
 
                 DemoContext.init(this);
             }
         }
+    }
+
+    private void initUserProvider() {
+        //todo 保存用户信息到Bmob
+        userInfoProvider = new UserInfoProvider();
+        /**
+         * 设置用户信息的提供者，供 RongIM 调用获取用户名称和头像信息。
+         *
+         *  UserInfoProvider 用户信息提供者。
+         *  isCacheUserInfo  设置是否由 IMKit 来缓存用户信息。<br>
+         *                         如果 App 提供的 UserInfoProvider
+         *                         每次都需要通过网络请求用户数据，而不是将用户数据缓存到本地内存，会影响用户信息的加载速度；<br>
+         *                         此时最好将本参数设置为 true，由 IMKit 将用户信息缓存到本地内存中。
+         * @see UserInfoProvider
+         */
+        RongIM.setUserInfoProvider(userInfoProvider, true);
     }
 
     private void init() {
