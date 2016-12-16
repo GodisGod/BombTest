@@ -8,9 +8,9 @@ public class Constant {
      * token 的主要作用是身份授权和安全，因此不能通过客户端直接访问融云服务器获取 token，
      * 您必须通过 Server API 从融云服务器 获取 token 返回给您的 App，并在之后连接时使用
      */
-    public static final String token1 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
-    public static final String token2 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
-    public static final String token3 = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
+    public static final String token1 = "duFJkc/4codUK0mu+0N3fKMr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNQfVNpNQJGEwFWZbdHdAnWPjfBuueXrRZg==";
+    public static final String token2 = "9C2j8vd1gvmkO3368azmgfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEINv2m2YZkd3l3/v8Uvvduk7mA+Ioh8twA==";
+    public static final String token3 = "AS20+IkNx4M6wTpp42CGRfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EENl+K99c68bSgEMuBuNEYP47mA+Ioh8twA==";
     //对应的用户ID为001
     public static String userId = "";
     public static String userName = "";
