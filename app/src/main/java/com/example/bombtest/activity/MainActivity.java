@@ -259,7 +259,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.query_userinfo:
                 BmobQuery query = new BmobQuery("User");
-                query.addWhereEqualTo("user_id", "222");
+                query.addWhereEqualTo("user_id",Constant.userId);
 //        query.setLimit(2);
                 query.order("createAt");
                 query.findObjectsByTable(new QueryListener<JSONArray>() {

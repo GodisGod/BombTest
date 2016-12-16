@@ -42,7 +42,7 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
                      *
                      * @param userInfo 需要更新的用户缓存数据。
                      */
-                    HD.TLOG("userinfo:  " + userInfo.getName() + "  " + userInfo.getUserId() + "  " + userInfo.getPortraitUri());
+                    HD.TLOG("userinfo2:  " + userInfo.getName() + "  " + userInfo.getUserId() + "  " + userInfo.getPortraitUri());
                     RongIM.getInstance().refreshUserInfoCache(userInfo);
                 } else {
                     HD.TLOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());

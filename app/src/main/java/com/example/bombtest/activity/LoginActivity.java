@@ -133,25 +133,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.choose_user1:
-                //大屏三星手机
-//                Constant.token = "qNXAU4LNaV8cQbq4EbBEV6Mr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNdXXY8W//unFvwTuLAht4H3jfBuueXrRZg==";
-                //对应的用户ID为123
                 Constant.userId = "001";
                 Constant.userName = "测试用户1";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
                 startIM(Constant.token1);
                 break;
             case R.id.choose_user2:
-//                Constant.token = "Le7e95ydLq3zAtF18Y75JPgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEIA0njTEMpsGR9IFvu+l2dQ7mA+Ioh8twA==";
-                //对应的用户ID为222
                 Constant.userId = "002";
                 Constant.userName = "测试用户2";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
                 startIM(Constant.token2);
                 break;
             case R.id.choose_user3:
-//                Constant.token = "4cwt+PWBSJMuRqMHFaIszfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEDZyvJvNaqMNb7WR5CjwdC87mA+Ioh8twA==";
-                //对应的用户ID为001
                 Constant.userId = "003";
                 Constant.userName = "测试用户3";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);

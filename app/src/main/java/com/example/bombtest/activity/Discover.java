@@ -108,8 +108,9 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                             for (PaperMessage m : list) {
                                 Log.i("LHD", "message: " + m.getSend_text_message());
                                 sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
-                                HD.TLOG(sb.toString());
-                                if (m.getUser_id() != Constant.userId) {
+//                                HD.TLOG(sb.toString());
+                                HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + (m.getUser_id().equals(Constant.userId)));
+                                if (!m.getUser_id().equals(Constant.userId)) {
                                     intent = new Intent(ctx, ChooseScrip.class);
                                     intent.putExtra("userId", m.getUser_id());
                                     intent.putExtra("userName", m.getUser_name());
