@@ -139,8 +139,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startIM(Constant.token1);
                 break;
             case R.id.choose_user2:
-                Constant.userId = "002";
-                Constant.userName = "测试用户2";
+                Constant.userId = "n002";
+                Constant.userName = "新用户2";
                 HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
                 startIM(Constant.token2);
                 break;
