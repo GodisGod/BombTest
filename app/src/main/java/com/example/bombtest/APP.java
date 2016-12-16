@@ -7,6 +7,12 @@ import android.graphics.Point;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.example.bombtest.listener.ScripConnectStatusListener;
+import com.example.bombtest.listener.ScripConversationBehaviorListener;
+import com.example.bombtest.listener.ScripConversationListBehaviorListener;
+import com.example.bombtest.listener.ScripReceiveMessageListener;
+import com.example.bombtest.listener.ScripSendMessageListener;
+
 import cn.bmob.v3.Bmob;
 import cn.sharesdk.framework.ShareSDK;
 import io.rong.imkit.RongIM;
@@ -19,13 +25,26 @@ public class APP extends Application {
     private static Context sContext;
     private static APP sInstance;
     public static int SCREEN_WIDTH;
+    private ScripSendMessageListener listener;
+    private ScripReceiveMessageListener receiveMessageListener;
+    private ScripConnectStatusListener connectStatusListener;
+    private ScripConversationListBehaviorListener conversationListBehaviorListener;
+    private ScripConversationBehaviorListener conversationBehaviorListener;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         init();
+        initListener();
         initsdk();
+    }
+
+    private void initListener() {
+        listener = new ScripSendMessageListener();
+        receiveMessageListener = new ScripReceiveMessageListener();
+        connectStatusListener = new ScripConnectStatusListener();
+        conversationListBehaviorListener = new ScripConversationListBehaviorListener();
+        conversationBehaviorListener = new ScripConversationBehaviorListener();
     }
 
     private void initsdk() {
@@ -43,7 +62,12 @@ public class APP extends Application {
              * IMKit SDK调用第一步 初始化
              */
             RongIM.init(this);
-
+            RongIM.getInstance().setSendMessageListener(listener);
+            RongIM.setOnReceiveMessageListener(receiveMessageListener);
+            RongIM.setConnectionStatusListener(connectStatusListener);
+            RongIM.setConversationListBehaviorListener(conversationListBehaviorListener);
+            RongIM.setConversationBehaviorListener(conversationBehaviorListener);
+            
             Log.i("LHD", " RongIM.init(this);");
             if (getApplicationInfo().packageName.equals(getCurProcessName(getApplicationContext()))) {
 
@@ -73,6 +97,7 @@ public class APP extends Application {
         }
         return sInstance;
     }
+
     /**
      * 获得当前进程的名字
      *
@@ -96,4 +121,5 @@ public class APP extends Application {
         }
         return null;
     }
+
 }
