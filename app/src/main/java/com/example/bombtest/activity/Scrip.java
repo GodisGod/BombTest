@@ -44,8 +44,6 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
         text = intent.getStringExtra("text");
         objectId = intent.getStringExtra("objectid");
         userId = intent.getStringExtra("userId");
-        userIcon = intent.getStringExtra("userIcon");
-        userName = intent.getStringExtra("userName");
         HD.LOG("imgurl: " + img_url);
         HD.LOG("text: " + text);
         HD.LOG("objectId: " + objectId);
@@ -103,10 +101,8 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
                 if (RongIM.getInstance() != null) {
                     HD.LOG("开启私聊页面");
                     RongIM.getInstance().startPrivateChat(ctx, userId, userName);
-//                    RongIM.getInstance().startConversation(ctx, Conversation.ConversationType.PRIVATE, userId, userName);
                     //todo 接收预置消息
                     finish();
-//            getMessages();
                 }
                 break;
             case R.id.gone_with_wind:

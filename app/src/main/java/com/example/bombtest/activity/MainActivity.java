@@ -28,7 +28,7 @@ import com.example.bombtest.util.HD;
 
 import org.json.JSONArray;
 
-import java.util.List;
+import java.io.File;
 
 import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
@@ -36,7 +36,7 @@ import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.QueryListener;
 import cn.bmob.v3.listener.SaveListener;
-import cn.bmob.v3.listener.UploadBatchListener;
+import cn.bmob.v3.listener.UploadFileListener;
 import io.rong.imkit.RongIM;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final PaperMessage message = new PaperMessage();
                 //TODO 模拟添加用户id
                 message.setUser_id(Constant.userId);  //添加用户ID
-                message.setUser_name(Constant.userName);//添加用户名
                 if (!content.isEmpty()) {
                     //添加文字
                     message.setSend_text_message(content);//添加发送的文本
@@ -184,59 +183,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 }
                 HD.LOG("1");
                 //添加图片
-                if (!img_url.isEmpty()) {
-
-//todo 批量长传文件
-                    //详细示例可查看BmobExample工程中BmobFileActivity类
-                    final String[] filePaths = new String[2];
-                    filePaths[0] = img_url;
-                    filePaths[1] = Constant.userIcon;
-                    HD.LOG("2 " + " imgulr: " + img_url + "  userIcon: " + Constant.userIcon);
-                    BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
-
+                if (img_url != null) {
+                    File file = new File(img_url);
+                    final BmobFile bmobFile = new BmobFile(file);
+                    bmobFile.uploadblock(new UploadFileListener() {
                         @Override
-                        public void onSuccess(List<BmobFile> files, List<String> urls) {
-                            //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
-                            //2、urls-上传文件的完整url地址
-                            if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
-                                //do something
-                                HD.TOS("上传成功" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
-                                Log.i("LHD", "成功：" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
-                                message.setSend_img_message(files.get(0));//添加发送的图片
-                                message.setSend_audio(files.get(0));//添加发送的音频
-                                message.setUser_icon(files.get(1));//添加用户头像
-                                //TODO 模拟添加语音
-                                message.save(new SaveListener<String>() {
-                                    @Override
-                                    public void done(String s, BmobException e) {
-                                        HD.LOG("纸片上传成功！");
-                                        if (e == null) {
-                                            HD.TOS("添加数据成功，返回objectId为： " + s);
-                                            Log.i("LHD", "成功：" + s);
-                                        } else {
-                                            HD.TOS("添加数据失败" + e.getMessage());
-                                            Log.i("LHD", "失败： " + e.getMessage());
-                                        }
+                        public void done(BmobException e) {
+                            message.setSend_img_message(bmobFile);
+                            message.setSend_audio(bmobFile);
+                            message.save(new SaveListener<String>() {
+                                @Override
+                                public void done(String s, BmobException e) {
+                                    if (e == null) {
+                                        Log.i("LHD", "添加成功" + s);
+                                    } else {
+                                        Log.i("LHD", "添加失败" + e.getMessage());
                                     }
-                                });
-                            }
+                                }
+                            });
                         }
 
                         @Override
-                        public void onError(int statuscode, String errormsg) {
-                            HD.LOG("错误码" + statuscode + ",错误描述：" + errormsg);
-                            HD.TOS("纸片上传失败" + errormsg);
-                            HD.LOG("失败： " + errormsg);
-                        }
-
-                        @Override
-                        public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
-                            //1、curIndex--表示当前第几个文件正在上传
-                            //2、curPercent--表示当前上传文件的进度值（百分比）
-                            //3、total--表示总的上传文件数
-                            //4、totalPercent--表示总的上传进度（百分比）
-                            HD.TOS("正在上传： " + curIndex + "  进度： " + curPercent);
-                            HD.LOG("正在上传： " + curIndex + "  进度： " + curPercent);
+                        public void onProgress(Integer value) {
+                            super.onProgress(value);
                         }
                     });
                 }
@@ -259,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.query_userinfo:
                 BmobQuery query = new BmobQuery("User");
-                query.addWhereEqualTo("user_id",Constant.userId);
+                query.addWhereEqualTo("user_id", Constant.userId);
 //        query.setLimit(2);
                 query.order("createAt");
                 query.findObjectsByTable(new QueryListener<JSONArray>() {
@@ -361,3 +330,58 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //               }
 //            }
 //        });
+//if (!img_url.isEmpty()) {
+//
+////todo 批量长传文件
+////详细示例可查看BmobExample工程中BmobFileActivity类
+//final String[] filePaths = new String[2];
+//        filePaths[0] = img_url;
+//        filePaths[1] = Constant.userIcon;
+//        HD.LOG("2 " + " imgulr: " + img_url + "  userIcon: " + Constant.userIcon);
+//        BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
+//
+//@Override
+//public void onSuccess(List<BmobFile> files, List<String> urls) {
+//        //1、files-上传完成后的BmobFile集合，是为了方便大家对其上传后的数据进行操作，例如你可以将该文件保存到表中
+//        //2、urls-上传文件的完整url地址
+//        if (urls.size() == filePaths.length) {//如果数量相等，则代表文件全部上传完成
+//        //do something
+//        HD.TOS("上传成功" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
+//        Log.i("LHD", "成功：" + " 图片: " + urls.get(0) + " 头像: " + urls.get(1));
+//        message.setSend_img_message(files.get(0));//添加发送的图片
+//        message.setSend_audio(files.get(0));//添加发送的音频
+//        //TODO 模拟添加语音
+//        message.save(new SaveListener<String>() {
+//@Override
+//public void done(String s, BmobException e) {
+//        HD.LOG("纸片上传成功！");
+//        if (e == null) {
+//        HD.TOS("添加数据成功，返回objectId为： " + s);
+//        Log.i("LHD", "成功：" + s);
+//        } else {
+//        HD.TOS("添加数据失败" + e.getMessage());
+//        Log.i("LHD", "失败： " + e.getMessage());
+//        }
+//        }
+//        });
+//        }
+//        }
+//
+//@Override
+//public void onError(int statuscode, String errormsg) {
+//        HD.LOG("错误码" + statuscode + ",错误描述：" + errormsg);
+//        HD.TOS("纸片上传失败" + errormsg);
+//        HD.LOG("失败： " + errormsg);
+//        }
+//
+//@Override
+//public void onProgress(int curIndex, int curPercent, int total, int totalPercent) {
+//        //1、curIndex--表示当前第几个文件正在上传
+//        //2、curPercent--表示当前上传文件的进度值（百分比）
+//        //3、total--表示总的上传文件数
+//        //4、totalPercent--表示总的上传进度（百分比）
+//        HD.TOS("正在上传： " + curIndex + "  进度： " + curPercent);
+//        HD.LOG("正在上传： " + curIndex + "  进度： " + curPercent);
+//        }
+//        });
+//        }

@@ -113,8 +113,6 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                                 if (!m.getUser_id().equals(Constant.userId)) {
                                     intent = new Intent(ctx, ChooseScrip.class);
                                     intent.putExtra("userId", m.getUser_id());
-                                    intent.putExtra("userName", m.getUser_name());
-                                    intent.putExtra("userIcon", m.getUser_icon().getFileUrl());
                                     intent.putExtra("objectid", m.getObjectId());
                                     intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
                                     intent.putExtra("text", m.getSend_text_message());
