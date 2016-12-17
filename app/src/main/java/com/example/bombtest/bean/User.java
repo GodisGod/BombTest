@@ -11,6 +11,17 @@ public class User extends BmobObject {
     private String user_name;//用户名
     private BmobFile user_icon;//用户头像
     private String user_sign;//用户签名
+    private String user_gender;//用户性别
+//    private String user_level;//用户等级
+//    private String user_city;//用户城市
+
+    public String getUser_gender() {
+        return user_gender;
+    }
+
+    public void setUser_gender(String user_gender) {
+        this.user_gender = user_gender;
+    }
 
     public String getUser_sign() {
         return user_sign;

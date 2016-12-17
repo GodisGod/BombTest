@@ -11,10 +11,15 @@ public class Constant {
     public static final String token1 = "duFJkc/4codUK0mu+0N3fKMr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNQfVNpNQJGEwFWZbdHdAnWPjfBuueXrRZg==";
     public static final String token2 = "i3pln72SNVi4HVeql/i30fgexAdqvb9hcKGVQbyaqfOwg8rbHG9EEAGNLVYFaFbVBN/1YT9aZN75k1C33uvOEA==";
     public static final String token3 = "AS20+IkNx4M6wTpp42CGRfgexAdqvb9hcKGVQbyaqfOwg8rbHG9EENl+K99c68bSgEMuBuNEYP47mA+Ioh8twA==";
+    public static final String QQtoken1 = "eRehsoogMoAoFoAkIY0eGKMr9UMQ0pPPzGYJ5GDBQb4Km4VnXb8qNaJ/dP6glCNy6q1Bg9TfKeg9xxmRBxBFyVdcpR7oZ1n8XlGVGXaGpG61nuPEyfXz+CbIb4dl7Z2dMQ8yXrX2a08=";
+
+
+    public static String curtoken = "";
 
     public static String userId = "";
     public static String userName = "";
     public static String userIcon = "";
+    public static String usergender = "";
 
 
 }

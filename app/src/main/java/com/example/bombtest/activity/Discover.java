@@ -109,14 +109,17 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
                                 Log.i("LHD", "message: " + m.getSend_text_message());
                                 sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
 //                                HD.TLOG(sb.toString());
-                                HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + (m.getUser_id().equals(Constant.userId)));
-                                if (!m.getUser_id().equals(Constant.userId)) {
+                                HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + "  " + (m.getUser_id().equals(Constant.userId)));
+                                HD.TLOG("m.getGender(): " + m.getGender() + " Constant.usergender: " + Constant.usergender + "  " + (m.getGender().equals(Constant.usergender)));
+                                if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
                                     intent = new Intent(ctx, ChooseScrip.class);
                                     intent.putExtra("userId", m.getUser_id());
                                     intent.putExtra("objectid", m.getObjectId());
                                     intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
                                     intent.putExtra("text", m.getSend_text_message());
                                     intent.putExtra("audio", m.getSend_audio());
+                                    intent.putExtra("gender", m.getGender());
+                                    HD.TLOG("发现的纸片： " + m.getUser_id() + m.getGender());
                                     break;
                                 }
                             }

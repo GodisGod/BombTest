@@ -22,6 +22,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
     private String userId;
     private String userName;
     private String userIcon;
+    private String userGender;
 
 
     @Override
@@ -38,6 +39,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         userId = intent.getStringExtra("userId");
         userName = intent.getStringExtra("userName");
         userIcon = intent.getStringExtra("userIcon");
+        userGender = intent.getStringExtra("gender");
     }
 
     private void initView() {
@@ -58,6 +60,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         intent.putExtra("text", text);
         intent.putExtra("objectid", objectId);
         intent.putExtra("userId", userId);
+        intent.putExtra("gender", userGender);
         startActivity(intent);
         finish();
     }

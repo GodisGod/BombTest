@@ -14,6 +14,15 @@ public class PaperMessage extends BmobObject {
     private BmobFile send_audio;//语音
     private BmobFile send_img_message;//图片
     private BmobGeoPoint gpsAdd;//地理位置
+    private String gender;//纸片主人性别
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
 
     public String getUser_id() {
         return user_id;

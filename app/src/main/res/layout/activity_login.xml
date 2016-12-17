@@ -27,25 +27,37 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
-        android:text="选择用户001" />
+        android:text="选择用户001 女" />
 
     <Button
         android:id="@+id/choose_user2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="选择用户002" />
+        android:text="选择用户002 女" />
 
     <Button
         android:id="@+id/choose_user3"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="选择用户003" />
+        android:text="选择用户003 男" />
 
     <Button
         android:id="@+id/choose_preuser"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:text="选择上一个用户" />
+
+    <Button
+        android:id="@+id/login_by_QQ"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="QQ登录" />
+
+    <Button
+        android:id="@+id/login_by_weixin"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="微信登录" />
 
 
 </LinearLayout>

@@ -169,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 final PaperMessage message = new PaperMessage();
                 //TODO 模拟添加用户id
                 message.setUser_id(Constant.userId);  //添加用户ID
+                message.setGender(Constant.usergender);//添加用户性别
                 if (!content.isEmpty()) {
                     //添加文字
                     message.setSend_text_message(content);//添加发送的文本
@@ -195,9 +196,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                 @Override
                                 public void done(String s, BmobException e) {
                                     if (e == null) {
-                                        Log.i("LHD", "添加成功" + s);
+                                        HD.TLOG("添加成功" + s);
                                     } else {
-                                        Log.i("LHD", "添加失败" + e.getMessage());
+                                        HD.TLOG("添加失败" + e.getMessage());
                                     }
                                 }
                             });
@@ -206,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         @Override
                         public void onProgress(Integer value) {
                             super.onProgress(value);
+                            HD.TLOG("onProgress: " + value);
                         }
                     });
                 }
