@@ -3,11 +3,10 @@ package com.example.bombtest.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import android.widget.ListView;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -18,6 +17,7 @@ import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import cn.bmob.v3.BmobQuery;
@@ -25,15 +25,20 @@ import cn.bmob.v3.datatype.BmobGeoPoint;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
-public class Discover extends AppCompatActivity implements View.OnClickListener {
-    private Button btn_discover;
-    private EditText edit_text;
+public class Discover extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+//    private Button btn_discover;
+//    private EditText edit_text;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private ListView listView;
 
     private double range = 100;
     private double lat;
     private double lng;
     private Context ctx;
     private Intent intent;
+
+    private List<PaperMessage> scrips;
     //高德定位
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -68,71 +73,44 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
         ctx = this;
+        scrips = new ArrayList<PaperMessage>();
         initView();
         initLocation();
     }
 
     private void initView() {
-        edit_text = (EditText) findViewById(R.id.range_et);
-        btn_discover = (Button) findViewById(R.id.btn_discover);
-        btn_discover.setOnClickListener(this);
+//        edit_text = (EditText) findViewById(R.id.range_et);
+//        btn_discover = (Button) findViewById(R.id.btn_discover);
+//        btn_discover.setOnClickListener(this);
+        swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.discover_swip);
+        listView = (ListView) findViewById(R.id.list_scrip);
+        //设置刷新时动画的颜色，可以设置4个
+        swipeRefreshLayout.setColorSchemeColors(
+                getResources().getColor(android.R.color.holo_blue_bright),
+                getResources().getColor(android.R.color.holo_red_light),
+                getResources().getColor(android.R.color.holo_orange_light),
+                getResources().getColor(android.R.color.holo_green_light));
+        swipeRefreshLayout.setOnRefreshListener(this);
+        //一进入这个Activity就自动刷新
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                //这行代码并不会触发onRefresh
+                swipeRefreshLayout.setRefreshing(true);
+                //必须手动调用
+                onRefresh();
+            }
+        });
     }
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btn_discover:
-                BmobQuery query = new BmobQuery("PaperMessage");
-                String s = edit_text.getText().toString().trim();
-
-                if (s.isEmpty()) {
-                    range = 50;
-                } else {
-                    range = Double.parseDouble(edit_text.getText().toString());
-                }
-                double a = range / 1000;
-                HD.TOS("D搜索范围： " + range + " Dlat: " + lat + " ,Dlng: " + lng);
-                query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
-//                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
-                Log.i("LHD", "D发现的经纬度： " + "\n" +
-                        "D经度：" + lng + "\n" +
-                        "D维度：" + lat);
-                query.setLimit(3);
-                query.findObjects(new FindListener<PaperMessage>() {
-                    @Override
-                    public void done(List<PaperMessage> list, BmobException e) {
-                        if (e == null) {
-                            Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
-                            HD.TOS("查询成功：共" + list.size() + "条数据。");
-                            StringBuilder sb = new StringBuilder();
-                            for (PaperMessage m : list) {
-                                Log.i("LHD", "message: " + m.getSend_text_message());
-                                sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
-//                                HD.TLOG(sb.toString());
-                                HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + "  " + (m.getUser_id().equals(Constant.userId)));
-                                HD.TLOG("m.getGender(): " + m.getGender() + " Constant.usergender: " + Constant.usergender + "  " + (m.getGender().equals(Constant.usergender)));
-                                if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
-                                    intent = new Intent(ctx, ChooseScrip.class);
-                                    intent.putExtra("userId", m.getUser_id());
-                                    intent.putExtra("objectid", m.getObjectId());
-                                    intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
-                                    intent.putExtra("text", m.getSend_text_message());
-                                    intent.putExtra("audio", m.getSend_audio());
-                                    intent.putExtra("gender", m.getGender());
-                                    HD.TLOG("发现的纸片： " + m.getUser_id() + m.getGender());
-                                    break;
-                                }
-                            }
-                            startActivity(intent);
-
-                        } else {
-                            Log.i("LHD", "查询失败：" + e.getMessage());
-                        }
-                    }
-                });
-                break;
-        }
-    }
+//    @Override
+//    public void onClick(View view) {
+//        switch (view.getId()) {
+//            case R.id.btn_discover:
+//
+//                break;
+//        }
+//    }
 
     private void initLocation() {
         //初始化定位
@@ -170,5 +148,65 @@ public class Discover extends AppCompatActivity implements View.OnClickListener 
         mLocationClient.setLocationOption(mLocationOption);
         //启动定位
         mLocationClient.startLocation();
+    }
+
+    @Override
+    public void onRefresh() {
+        BmobQuery query = new BmobQuery("PaperMessage");
+//                String s = edit_text.getText().toString().trim();
+
+//                if (s.isEmpty()) {
+//                    range = 50;
+//                } else {
+//                    range = Double.parseDouble(edit_text.getText().toString());
+//                }
+        double a = range / 1000;
+        HD.TOS("D搜索范围： " + range + " Dlat: " + lat + " ,Dlng: " + lng);
+        query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
+//                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
+        Log.i("LHD", "D发现的经纬度： " + "\n" +
+                "D经度：" + lng + "\n" +
+                "D维度：" + lat);
+        //最多展示附近的10条数据
+        query.setLimit(10);
+        query.findObjects(new FindListener<PaperMessage>() {
+            @Override
+            public void done(List<PaperMessage> list, BmobException e) {
+                if (e == null) {
+                    Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
+                    HD.TOS("查询成功：共" + list.size() + "条数据。");
+                    StringBuilder sb = new StringBuilder();
+                    for (PaperMessage m : list) {
+                        Log.i("LHD", "message: " + m.getSend_text_message());
+                        sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
+//                                HD.TLOG(sb.toString());
+                        HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + "  " + (m.getUser_id().equals(Constant.userId)));
+                        HD.TLOG("m.getGender(): " + m.getGender() + " Constant.usergender: " + Constant.usergender + "  " + (m.getGender().equals(Constant.usergender)));
+                        //将不是本人的、异性的纸片加入到scrips中
+                        if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
+//                            intent = new Intent(ctx, ChooseScrip.class);
+//                            intent.putExtra("userId", m.getUser_id());
+//                            intent.putExtra("objectid", m.getObjectId());
+//                            intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
+//                            intent.putExtra("text", m.getSend_text_message());
+//                            intent.putExtra("audio", m.getSend_audio());
+//                            intent.putExtra("gender", m.getGender());
+//                            break;
+                            scrips.add(m);
+                            //如果发现了10条数据就终止循环（最多展示10条）
+                            if (scrips.size()>=10){
+                                break;
+                            }
+                            HD.TLOG("发现的纸片： " + m.getUser_id() + m.getGender());
+                        }
+                    }
+
+//                    startActivity(intent);
+
+                } else {
+                    Log.i("LHD", "查询失败：" + e.getMessage());
+                }
+            }
+        });
     }
 }

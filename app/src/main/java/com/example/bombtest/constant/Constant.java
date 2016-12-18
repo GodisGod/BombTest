@@ -21,5 +21,9 @@ public class Constant {
     public static String userIcon = "";
     public static String usergender = "";
 
-
+    //纸片的类型 1、文字消息，2、图片消息，3、图文消息，4、语音消息
+    public static final int Paper_TEXT = 1;
+    public static final int Paper_AUDIO = 2;
+    public static final int Paper_IMG = 3;
+    public static final int Paper_TEXT_IMG = 4;
 }

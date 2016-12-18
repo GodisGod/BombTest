@@ -43,7 +43,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private Context ctx;
     private EditText send_content;
-    private Button btn_send;
+    private Button btn_send_text;
+    private Button btn_send_audio;
+    private Button btn_send_img;
+    private Button btn_send_img_text;
     private Button jump;
     private Button jump_discover;
     private Button jump_conversation_list;
@@ -105,10 +108,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         jump = (Button) findViewById(R.id.jump_btn);
         jump_discover = (Button) findViewById(R.id.jump_to_discover);
-        btn_send = (Button) findViewById(R.id.btn_send);
+        btn_send_text = (Button) findViewById(R.id.btn_send_text);
+        btn_send_audio = (Button) findViewById(R.id.btn_send_audio);
+        btn_send_img = (Button) findViewById(R.id.btn_send_img);
+        btn_send_img_text = (Button) findViewById(R.id.btn_send_img_text);
         jump_conversation_list = (Button) findViewById(R.id.jump_conversation_list);
         query_userinfo = (Button) findViewById(R.id.query_userinfo);
-        btn_send.setOnClickListener(this);
+        btn_send_text.setOnClickListener(this);
+        btn_send_audio.setOnClickListener(this);
+        btn_send_img.setOnClickListener(this);
+        btn_send_img_text.setOnClickListener(this);
         send_img_choose.setOnClickListener(this);
         choose_user_icon.setOnClickListener(this);
         jump.setOnClickListener(this);
@@ -164,55 +173,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.btn_send:
+            case R.id.btn_send_text:
                 final String content = send_content.getText().toString();
-                final PaperMessage message = new PaperMessage();
-                //TODO 模拟添加用户id
-                message.setUser_id(Constant.userId);  //添加用户ID
-                message.setGender(Constant.usergender);//添加用户性别
-                if (!content.isEmpty()) {
-                    //添加文字
-                    message.setSend_text_message(content);//添加发送的文本
-                    //添加经纬度
-                    message.setGpsAdd(new BmobGeoPoint(lng, lat));//添加经纬度
-                    HD.LOG("添加的经纬度： " + "\n" +
-                            "经度：" + lng + "\n" +
-                            "维度：" + lat);
-                    HD.TOS("添加的经纬度： " + "\n" +
-                            "经度：" + lng + "\n" +
-                            "维度：" + lat);
+                sendMessage(content, Constant.Paper_TEXT, null);
+                break;
+            case R.id.btn_send_audio:
+                //todo 上传语音
+                HD.TLOG("待开发...");
+                break;
+            case R.id.btn_send_img:
+                if (img_url.isEmpty()) {
+                    HD.TOS("请选择图片");
+                    return;
                 }
-                HD.LOG("1");
-                //添加图片
-                if (img_url != null) {
-                    File file = new File(img_url);
-                    final BmobFile bmobFile = new BmobFile(file);
-                    bmobFile.uploadblock(new UploadFileListener() {
-                        @Override
-                        public void done(BmobException e) {
-                            message.setSend_img_message(bmobFile);
-                            message.setSend_audio(bmobFile);
-                            message.save(new SaveListener<String>() {
-                                @Override
-                                public void done(String s, BmobException e) {
-                                    if (e == null) {
-                                        HD.TLOG("添加成功" + s);
-                                    } else {
-                                        HD.TLOG("添加失败" + e.getMessage());
-                                    }
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onProgress(Integer value) {
-                            super.onProgress(value);
-                            HD.TLOG("onProgress: " + value);
-                        }
-                    });
+                File file = new File(img_url);
+                BmobFile bmobFile = new BmobFile(file);
+                sendMessage("", Constant.Paper_IMG, bmobFile);
+                break;
+            case R.id.btn_send_img_text:
+                String content2 = send_content.getText().toString();
+                if (img_url.isEmpty()) {
+                    HD.TOS("请选择图片");
+                    return;
+                }
+                File file2 = new File(img_url);
+                BmobFile bmobFile2 = new BmobFile(file2);
+                if (content2.isEmpty()) {//如果文字为空,则上传的是图片消息而不是图文消息
+                    sendMessage("", Constant.Paper_IMG, bmobFile2);
+                } else {//如果文字不为空,则上传的是图文消息
+                    sendMessage(content2, Constant.Paper_TEXT_IMG, bmobFile2);
                 }
                 break;
-
             case R.id.img_send:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 1);
                 break;
@@ -272,6 +263,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         mLocationClient.onDestroy();//销毁定位客户端，同时销毁本地定位服务。
 
+    }
+
+    private void sendMessage(String text, int type, BmobFile bmobFile) {
+        final PaperMessage message = new PaperMessage();
+        if (!text.isEmpty()) {//添加文字
+            message.setSend_text_message(text);
+        } else {
+            message.setSend_text_message(null);
+        }
+        if (type == 1) {//如果是文字纸片将    将图片和语音置空
+            if (text.isEmpty()) {//添加文字
+                HD.TLOG("请添加文字");
+                return;
+            }
+            message.setType(1);
+            message.setSend_img_message(null);
+            message.setSend_audio(null);
+        }
+        if (type == 2) {//如果是语音纸片   将图片和文字置空
+            message.setType(2);
+            message.setSend_audio(bmobFile);
+            message.setSend_text_message("");
+            message.setSend_img_message(null);
+        }
+        if (type == 3) {//如果是图片纸片   将语音和文字置空
+            message.setType(3);
+            message.setSend_audio(null);
+            message.setSend_text_message("");
+            message.setSend_img_message(bmobFile);
+        }
+        if (type == 4) {//如果是图文纸片   将语音置空
+            message.setType(4);
+            message.setSend_audio(null);
+            message.setSend_img_message(bmobFile);
+        }
+        message.setUser_id(Constant.userId);
+        message.setGender(Constant.usergender);
+        message.setGpsAdd(new BmobGeoPoint(lng, lat));
+        //开始上传
+        if (type != 1) {//只要不是纯文字消息，都需要上传bmobfile
+            bmobFile.uploadblock(new UploadFileListener() {
+                @Override
+                public void done(BmobException e) {
+                    message.save(new SaveListener<String>() {
+                        @Override
+                        public void done(String s, BmobException e) {
+                            if (e == null) {
+                                HD.TLOG("添加成功" + s);
+                            } else {
+                                HD.TLOG("添加失败" + e.getMessage());
+                            }
+                        }
+                    });
+                }
+
+                @Override
+                public void onProgress(Integer value) {
+                    super.onProgress(value);
+                    HD.TLOG("上传进度: " + value);
+                }
+            });
+        } else {//如果是纯文字纸片
+            message.save(new SaveListener<String>() {
+                @Override
+                public void done(String s, BmobException e) {
+                    if (e == null) {
+                        HD.TLOG("添加成功" + s);
+                    } else {
+                        HD.TLOG("添加失败" + e.getMessage());
+                    }
+                }
+            });
+        }
     }
 }
 

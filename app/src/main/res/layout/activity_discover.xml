@@ -1,34 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/discover_swip"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.bombtest.activity.Discover">
 
-    <LinearLayout
+    <ListView
+        android:id="@+id/list_scrip"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:orientation="horizontal">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/range_et"
-            android:layout_width="100dp"
-            android:layout_height="50dp" />
+    </ListView>
+    <!--<LinearLayout-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:orientation="horizontal">-->
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:text="米,最少是50米"
-            android:textSize="20sp" />
-    </LinearLayout>
+    <!--<EditText-->
+    <!--android:id="@+id/range_et"-->
+    <!--android:layout_width="100dp"-->
+    <!--android:layout_height="50dp" />-->
 
-    <Button
-        android:id="@+id/btn_discover"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="发现" />
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="5dp"-->
+    <!--android:text="米,最少是50米"-->
+    <!--android:textSize="20sp" />-->
+    <!--</LinearLayout>-->
+
+    <!--<Button-->
+    <!--android:id="@+id/btn_discover"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="50dp"-->
+    <!--android:text="发现" />-->
 
 
-</LinearLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

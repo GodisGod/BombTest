@@ -15,6 +15,15 @@ public class PaperMessage extends BmobObject {
     private BmobFile send_img_message;//图片
     private BmobGeoPoint gpsAdd;//地理位置
     private String gender;//纸片主人性别
+    private int type;//纸片的类型 1、文字消息，2、语音消息,3、图片消息，4、图文消息
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
     public String getGender() {
         return gender;
