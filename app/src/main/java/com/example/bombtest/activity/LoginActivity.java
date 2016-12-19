@@ -258,11 +258,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String userGender = platform.getDb().getUserGender();
                     String userId = platform.getDb().getUserId();
                     HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userId + " " + userIcon);
-                    userId = userId;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
-                    Constant.curtoken = Constant.QQtoken1;
-                    startIM(Constant.QQtoken1);
+                    getTokenFromCloud(userId,uname,userIcon);
+                    startIM(Constant.curtoken);
                 }
 
                 @Override
