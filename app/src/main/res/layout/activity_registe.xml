@@ -57,6 +57,7 @@
             android:textSize="20sp" />
 
         <ImageView
+            android:background="#5e3d"
             android:id="@+id/reg_img_user_icon"
             android:layout_width="100dp"
             android:layout_height="100dp" />
