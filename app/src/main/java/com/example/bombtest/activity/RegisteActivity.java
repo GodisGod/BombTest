@@ -99,19 +99,15 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         userinfo.setUser_id(Constant.userId);  //添加用户ID
         userinfo.setUser_name(Constant.userName);//添加用户名
         userinfo.setUser_gender(Constant.usergender);//添加用户性别
-        SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-        edit.putString("USER_TOKEN", Constant.curtoken);
-        HD.LOG("保存token: " + Constant.curtoken);
-        edit.apply();
+        userinfo.setUser_sign("鸿达的新签名");//添加用户签名
         //添加头像
         if (!Constant.userIcon.isEmpty()) {
             final File file = new File(userIcon);
-            final BmobFile bmobFile = new BmobFile(file);
+            BmobFile bmobFile = new BmobFile(file);
+            userinfo.setUser_icon(bmobFile);//添加用户头像
             bmobFile.uploadblock(new UploadFileListener() {
                 @Override
                 public void done(BmobException e) {
-                    userinfo.setUser_icon(bmobFile);//添加用户头像
-                    userinfo.setUser_sign("鸿达的新签名");//添加用户签名
                     userinfo.save(new SaveListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
@@ -163,8 +159,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
             public void done(Object object, BmobException e) {
                 if (e == null) {
                     String result1 = object.toString().replace("\\", "");
-                   String result = result1.substring(1,result1.length()-1);
-
+                    String result = result1.substring(1, result1.length() - 1);
                     HD.TLOG("云端逻辑返回值：" + result);
                     //解析token
                     analyResultToGetToken(result);
@@ -176,11 +171,6 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private void analyResultToGetToken(String json) {
-//        Gson gson = new Gson();
-//        GsonRegUser gsonRegUser = gson.fromJson(json,GsonRegUser.class);
-//        HD.TLOG(gsonRegUser.toString());
-//        token = gsonRegUser.getToken();
-
         try {
             JSONObject object = new JSONObject(json);
             token = object.getString("token");
@@ -217,12 +207,16 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                 }
             });
             HD.TLOG("解析token: " + userId + "  " + token);
-
+            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+            edit.putString("USER_TOKEN", Constant.curtoken);
+            HD.LOG("保存token: " + Constant.curtoken);
+            edit.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
     }
+
     public static String JSONTokener(String str_json) {
         // consume an optional byte order mark (BOM) if it exists
         if (str_json != null && str_json.startsWith("\ufeff")) {
@@ -230,6 +224,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         }
         return str_json;
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
