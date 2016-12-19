@@ -103,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         send_content = (EditText) findViewById(R.id.ed_content);
         title = (TextView) findViewById(R.id.main_title);
         title.setText("当前用户： " + Constant.userId + "  " + Constant.userName);
+        HD.LOG("当前的Token:  " + Constant.curtoken);
         send_img_choose = (ImageView) findViewById(R.id.img_send);
         choose_user_icon = (ImageView) findViewById(R.id.img_user_icon);
 

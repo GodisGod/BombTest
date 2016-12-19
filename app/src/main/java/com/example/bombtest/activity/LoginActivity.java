@@ -385,7 +385,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             });
             SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
             edit.putString(userId, Constant.curtoken);
-            edit.putString("USER_TOKEN", Constant.curtoken);
             HD.LOG("保存token: " + Constant.curtoken);
             edit.apply();
         } catch (JSONException e) {

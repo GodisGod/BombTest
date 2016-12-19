@@ -203,9 +203,10 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
             JSONObject object = new JSONObject(json);
             token = object.getString("token");
             Constant.curtoken = token;
+            Constant.userId = userId;
             HD.TLOG("解析token: " + userId + "  " + token);
             SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-            edit.putString("USER_TOKEN", Constant.curtoken);
+            edit.putString(Constant.userId, Constant.curtoken);
             HD.LOG("保存token: " + Constant.curtoken);
             edit.apply();
             RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {
