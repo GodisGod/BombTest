@@ -17,6 +17,8 @@ import com.amap.api.location.AMapLocationListener;
 import com.example.bombtest.R;
 import com.example.bombtest.adapter.ScripAdapter;
 import com.example.bombtest.bean.PaperMessage;
+import com.example.bombtest.bean.PaperMessageUser;
+import com.example.bombtest.bean.User;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
@@ -41,7 +43,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
     private Context ctx;
     private Intent intent;
 
-    private List<PaperMessage> scrips;
+    private List<PaperMessageUser> scrips;
     private ScripAdapter adapter;
     //高德定位
     //声明AMapLocationClient类对象
@@ -59,9 +61,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                     HD.TOS("Dlat: " + lat + "   Dlng: " + lng + "\n" + "位置： " + amapLocation.getAddress());
                 } else {
                     //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                    Log.e("LHD", "location Error, ErrCode:"
-                            + amapLocation.getErrorCode() + ", errInfo:"
-                            + amapLocation.getErrorInfo());
                     HD.TOS("location Error, ErrCode:"
                             + amapLocation.getErrorCode() + ", errInfo:"
                             + amapLocation.getErrorInfo());
@@ -77,7 +76,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_discover);
         ctx = this;
-        scrips = new ArrayList<PaperMessage>();
+        scrips = new ArrayList<PaperMessageUser>();
         adapter = new ScripAdapter(this, scrips);
         initView();
         initLocation();
@@ -93,11 +92,11 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                PaperMessage p = scrips.get(i);
+                PaperMessageUser p = scrips.get(i);
                 intent = new Intent(ctx, Scrip.class);
                 intent.putExtra("userId", p.getUser_id());
                 intent.putExtra("objectid", p.getObjectId());
-                if (p.getSend_img_message()==null) {
+                if (p.getSend_img_message() == null) {
                     intent.putExtra("imgurl", "");
                 } else {
                     intent.putExtra("imgurl", p.getSend_img_message().getFileUrl());
@@ -107,7 +106,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                 } else {
                     intent.putExtra("text", p.getSend_text_message());
                 }
-                if (p.getSend_audio()==null) {
+                if (p.getSend_audio() == null) {
                     intent.putExtra("audio", "");
                 } else {
                     intent.putExtra("audio", p.getSend_audio().getFileUrl());
@@ -192,6 +191,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
 
     @Override
     public void onRefresh() {
+        scrips.clear();
         BmobQuery query = new BmobQuery("PaperMessage");
 //                String s = edit_text.getText().toString().trim();
 
@@ -214,10 +214,8 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             public void done(List<PaperMessage> list, BmobException e) {
                 if (e == null) {
                     HD.TLOG("查询成功：共" + list.size() + "条数据。");
-                    for (PaperMessage m : list) {
+                    for (final PaperMessage m : list) {
                         HD.LOG("the message: " + m.getSend_text_message() + " | " + m.getGender());
-                        HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + "  " + (m.getUser_id().equals(Constant.userId)));
-                        HD.TLOG("m.getGender(): " + m.getGender() + " Constant.usergender: " + Constant.usergender + "  " + (m.getGender().equals(Constant.usergender)));
                         HD.LOG("====" + (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)));
                         //将不是本人的、异性的纸片加入到scrips中
                         if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
@@ -229,16 +227,38 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
 //                            intent.putExtra("audio", m.getSend_audio());
 //                            intent.putExtra("gender", m.getGender());
 //                            break;
-                            scrips.add(m);
+                            BmobQuery<User> query = new BmobQuery<User>("User");
+                            query.addWhereEqualTo("user_id", m.getUser_id());
+                            query.findObjects(new FindListener<User>() {
+                                @Override
+                                public void done(List<User> list, BmobException e) {
+                                    if (e == null) {
+                                        HD.LOG("展示用户的头像 findObjects: " + list.get(0).getUser_name() + "  " + list.get(0).getUser_icon().getFileUrl());
+                                        PaperMessageUser p = new PaperMessageUser();
+                                        p.setGender(m.getGender());
+                                        p.setGpsAdd(m.getGpsAdd());
+                                        p.setSend_audio(m.getSend_audio());
+                                        p.setSend_img_message(m.getSend_img_message());
+                                        p.setSend_text_message(m.getSend_text_message());
+                                        p.setType(m.getType());
+                                        p.setUser_id(m.getUser_id());
+                                        p.setUserIcon(list.get(0).getUser_icon().getFileUrl());
+                                        p.setCreateTime(m.getCreatedAt());
+                                        p.setObjectId(m.getObjectId());
+                                        scrips.add(p);
+                                        adapter.notifyDataSetChanged();
+                                        HD.TLOG("发现的纸片： " + m.getUser_id() +"  "+ m.getGender()+"  "+scrips.size());
+                                    } else {
+                                        HD.LOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
+                                    }
+                                }
+                            });
                             //如果发现了10条数据就终止循环（最多展示10条）
                             if (scrips.size() >= 10) {
                                 break;
                             }
-                            HD.TLOG("发现的纸片： " + m.getUser_id() + m.getGender());
                         }
                     }
-
-                    adapter.notifyDataSetChanged();
                     swipeRefreshLayout.post(new Runnable() {
                         @Override
                         public void run() {
