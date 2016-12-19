@@ -12,7 +12,7 @@ public class User extends BmobObject {
     private BmobFile user_icon;//用户头像
     private String user_sign;//用户签名
     private String user_gender;//用户性别
-    private String user_password;
+    private String user_password;//用户密码
 //    private String user_level;//用户等级
 //    private String user_city;//用户城市
 

@@ -70,7 +70,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initView() {
         user_id = (EditText) findViewById(R.id.reg_et_user_id);
-        user_password = (EditText) findViewById(R.id.user_password);
+        user_password = (EditText) findViewById(R.id.reg_et_user_password);
         user_name = (EditText) findViewById(R.id.reg_et_user_name);
         user_icon = (ImageView) findViewById(R.id.reg_img_user_icon);
         btn_reg = (Button) findViewById(R.id.reg_btn_reg);
@@ -100,9 +100,9 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.reg_btn_reg:
                 userId = user_id.getText().toString();//ID
-                userPassword = user_password.getText().toString();
+                userPassword = user_password.getText().toString();//password
                 userName = user_name.getText().toString();//Name
-                if (userId.isEmpty() | userName.isEmpty() | userIcon.isEmpty()|userPassword.isEmpty()) {
+                if (userId.isEmpty() | userName.isEmpty() | userIcon.isEmpty() | userPassword.isEmpty()) {
                     HD.TLOG("信息不完整");
                     return;
                 }
@@ -114,22 +114,23 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                     return;
                 }
                 Constant.usergender = gender;
-                uploadUserinfo();
+                Constant.sign = "默认签名";
+                uploadUserinfo(userId, userPassword, userIcon, userName, gender, Constant.sign);
                 break;
         }
     }
 
-    private void uploadUserinfo() {
+    private void uploadUserinfo(final String id, String password, String icon, final String name, String gender, final String sign) {
         final User userinfo = new User();
         //上传用户信息
-        userinfo.setUser_id(Constant.userId);  //添加用户ID
-        userinfo.setUser_password(Constant.userPassword);
-        userinfo.setUser_name(Constant.userName);//添加用户名
-        userinfo.setUser_gender(Constant.usergender);//添加用户性别
-        userinfo.setUser_sign("鸿达的新签名");//添加用户签名
+        userinfo.setUser_id(id);  //添加用户ID
+        userinfo.setUser_password(password);//添加用户密码
+        userinfo.setUser_name(name);//添加用户名
+        userinfo.setUser_gender(gender);//添加用户性别
+        userinfo.setUser_sign(sign);//添加用户签名
         //添加头像
         if (!Constant.userIcon.isEmpty()) {
-            final File file = new File(userIcon);
+            final File file = new File(icon);
             BmobFile bmobFile = new BmobFile(file);
             userinfo.setUser_icon(bmobFile);//添加用户头像
             bmobFile.uploadblock(new UploadFileListener() {
@@ -141,7 +142,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                             HD.TLOG("用户信息保存到数据库成功: " + s);
                             //查询头像url
                             BmobQuery<User> query = new BmobQuery<User>("User");
-                            query.addWhereEqualTo("user_id", userId);
+                            query.addWhereEqualTo("user_id", id);
                             query.findObjects(new FindListener<User>() {
                                 @Override
                                 public void done(List<User> list, BmobException e) {
@@ -149,7 +150,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                                         userIcon = list.get(0).getUser_icon().getFileUrl();
                                         HD.TLOG("findObjects: " + list.get(0).getUser_name() + "  " + list.get(0).getUser_icon().getFileUrl());
                                         //将新用户数据添加到数据库User表中
-                                        getTokenFromCloud(userId, userName, userIcon);
+                                        getTokenFromCloud(id, name, userIcon);
                                     } else {
                                         HD.LOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
                                     }
@@ -202,6 +203,11 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
             JSONObject object = new JSONObject(json);
             token = object.getString("token");
             Constant.curtoken = token;
+            HD.TLOG("解析token: " + userId + "  " + token);
+            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+            edit.putString("USER_TOKEN", Constant.curtoken);
+            HD.LOG("保存token: " + Constant.curtoken);
+            edit.apply();
             RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {
 
                 /**
@@ -233,11 +239,6 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                     Log.i("LHD", "onError: " + errorCode);
                 }
             });
-            HD.TLOG("解析token: " + userId + "  " + token);
-            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-            edit.putString("USER_TOKEN", Constant.curtoken);
-            HD.LOG("保存token: " + Constant.curtoken);
-            edit.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -250,8 +251,8 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 3) {
             if (resultCode == RESULT_OK) {
-                Constant.userIcon = data.getStringExtra("imgurl");//更新头像
-                userIcon = Constant.userIcon;
+                userIcon = data.getStringExtra("imgurl");//更新头像
+                Constant.userIcon = userIcon;
                 Glide.with(ctx).load(Constant.userIcon)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.mipmap.ic_launcher)
