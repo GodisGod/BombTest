@@ -17,6 +17,7 @@ public class Constant {
     public static String curtoken = "";
 
     public static String userId = "";
+    public static String userPassword = "";
     public static String userName = "";
     public static String userIcon = "";
     public static String usergender = "";

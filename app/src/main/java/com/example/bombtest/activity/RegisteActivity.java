@@ -42,6 +42,7 @@ import io.rong.imlib.RongIMClient;
 public class RegisteActivity extends AppCompatActivity implements View.OnClickListener {
     //ID NAME Sign gender icon
     private EditText user_id;
+    private EditText user_password;
     private EditText user_name;
     private ImageView user_icon;
     private Button btn_reg;
@@ -50,6 +51,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
     private String gender = "m";
     private Random random;
     private String userId;
+    private String userPassword;
     private String userName;
     private String userIcon;
     private RadioGroup radioGroup;
@@ -68,6 +70,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
 
     private void initView() {
         user_id = (EditText) findViewById(R.id.reg_et_user_id);
+        user_password = (EditText) findViewById(R.id.user_password);
         user_name = (EditText) findViewById(R.id.reg_et_user_name);
         user_icon = (ImageView) findViewById(R.id.reg_img_user_icon);
         btn_reg = (Button) findViewById(R.id.reg_btn_reg);
@@ -97,12 +100,14 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                 break;
             case R.id.reg_btn_reg:
                 userId = user_id.getText().toString();//ID
+                userPassword = user_password.getText().toString();
                 userName = user_name.getText().toString();//Name
-                if (userId.isEmpty() | userName.isEmpty() | userIcon.isEmpty()) {
+                if (userId.isEmpty() | userName.isEmpty() | userIcon.isEmpty()|userPassword.isEmpty()) {
                     HD.TLOG("信息不完整");
                     return;
                 }
                 Constant.userId = userId;
+                Constant.userPassword = userPassword;
                 Constant.userName = userName;
                 if (gender.isEmpty()) {
                     HD.TLOG("请选择性别");
@@ -118,6 +123,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         final User userinfo = new User();
         //上传用户信息
         userinfo.setUser_id(Constant.userId);  //添加用户ID
+        userinfo.setUser_password(Constant.userPassword);
         userinfo.setUser_name(Constant.userName);//添加用户名
         userinfo.setUser_gender(Constant.usergender);//添加用户性别
         userinfo.setUser_sign("鸿达的新签名");//添加用户签名
@@ -238,13 +244,6 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
-    public static String JSONTokener(String str_json) {
-        // consume an optional byte order mark (BOM) if it exists
-        if (str_json != null && str_json.startsWith("\ufeff")) {
-            str_json = str_json.substring(1);
-        }
-        return str_json;
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

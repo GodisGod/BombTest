@@ -180,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btn_send_audio:
                 //todo 上传语音
                 HD.TLOG("待开发...");
+//                sendMessage(null, Constant.Paper_AUDIO, null);
                 break;
             case R.id.btn_send_img:
                 if (img_url.isEmpty()) {

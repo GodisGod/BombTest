@@ -27,6 +27,24 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="用户密码"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/reg_et_user_password"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
         android:orientation="horizontal">
 
@@ -57,10 +75,10 @@
             android:textSize="20sp" />
 
         <ImageView
-            android:background="#5e3d"
             android:id="@+id/reg_img_user_icon"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:background="#5e3d" />
     </LinearLayout>
 
     <RadioGroup

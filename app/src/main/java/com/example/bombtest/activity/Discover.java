@@ -31,9 +31,6 @@ import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
 public class Discover extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-//    private Button btn_discover;
-//    private EditText edit_text;
-
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
 
@@ -83,9 +80,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
     }
 
     private void initView() {
-//        edit_text = (EditText) findViewById(R.id.range_et);
-//        btn_discover = (Button) findViewById(R.id.btn_discover);
-//        btn_discover.setOnClickListener(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.discover_swip);
         listView = (ListView) findViewById(R.id.list_scrip);
         listView.setAdapter(adapter);
@@ -96,6 +90,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                 intent = new Intent(ctx, Scrip.class);
                 intent.putExtra("userId", p.getUser_id());
                 intent.putExtra("objectid", p.getObjectId());
+                intent.putExtra("userIcon",p.getUserIcon());
                 if (p.getSend_img_message() == null) {
                     intent.putExtra("imgurl", "");
                 } else {
@@ -113,6 +108,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                 }
 
                 intent.putExtra("gender", p.getGender());
+
                 startActivity(intent);
             }
         });
@@ -141,16 +137,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             }
         });
     }
-
-//    @Override
-//    public void onClick(View view) {
-//        switch (view.getId()) {
-//            case R.id.btn_discover:
-//
-//                break;
-//        }
-//    }
-
     private void initLocation() {
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
@@ -193,13 +179,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
     public void onRefresh() {
         scrips.clear();
         BmobQuery query = new BmobQuery("PaperMessage");
-//                String s = edit_text.getText().toString().trim();
-
-//                if (s.isEmpty()) {
-//                    range = 50;
-//                } else {
-//                    range = Double.parseDouble(edit_text.getText().toString());
-//                }
         double a = range / 1000;
         HD.TOS("D搜索范围： " + range + " Dlat: " + lat + " ,Dlng: " + lng);
         query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
@@ -219,14 +198,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                         HD.LOG("====" + (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)));
                         //将不是本人的、异性的纸片加入到scrips中
                         if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
-//                            intent = new Intent(ctx, ChooseScrip.class);
-//                            intent.putExtra("userId", m.getUser_id());
-//                            intent.putExtra("objectid", m.getObjectId());
-//                            intent.putExtra("imgurl", m.getSend_img_message().getFileUrl());
-//                            intent.putExtra("text", m.getSend_text_message());
-//                            intent.putExtra("audio", m.getSend_audio());
-//                            intent.putExtra("gender", m.getGender());
-//                            break;
                             BmobQuery<User> query = new BmobQuery<User>("User");
                             query.addWhereEqualTo("user_id", m.getUser_id());
                             query.findObjects(new FindListener<User>() {
@@ -266,8 +237,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     });
-//                    startActivity(intent);
-
                 } else {
                     HD.LOG("discover查询失败：" + e.getMessage());
                 }

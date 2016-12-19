@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
@@ -25,12 +26,15 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import cn.bmob.v3.AsyncCustomEndpoints;
+import cn.bmob.v3.BmobQuery;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.CloudCodeListener;
+import cn.bmob.v3.listener.FindListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import cn.sharesdk.framework.Platform;
@@ -40,6 +44,8 @@ import cn.sharesdk.tencent.qq.QQ;
 import cn.sharesdk.wechat.friends.Wechat;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
+
+import static com.example.bombtest.constant.Constant.userId;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, PlatformActionListener {
@@ -52,7 +58,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button login_QQ;
     private Button login_Weixin;
     private Button logic_cloud;
+    private EditText user_account;
+    private EditText user_password;
+    private Button user_login;
     private ImageView choose_user_icon;
+    private String token;
+    private String account;
+    private String password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +86,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login_QQ = (Button) findViewById(R.id.login_by_QQ);
         login_Weixin = (Button) findViewById(R.id.login_by_weixin);
         logic_cloud = (Button) findViewById(R.id.logic_cloud);
+        user_account = (EditText) findViewById(R.id.user_account);
+        user_password = (EditText) findViewById(R.id.user_password);
+        user_login = (Button) findViewById(R.id.user_login);
         choose_user_icon = (ImageView) findViewById(R.id.chooser_user_icon);
         user1_001.setOnClickListener(this);
         user1_123.setOnClickListener(this);
@@ -83,12 +98,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login_Weixin.setOnClickListener(this);
         choose_user_icon.setOnClickListener(this);
         logic_cloud.setOnClickListener(this);
+        user_login.setOnClickListener(this);
     }
 
     private void uploadUserinfo() {
         final User userinfo = new User();
         //上传用户信息
-        userinfo.setUser_id(Constant.userId);  //添加用户ID
+        userinfo.setUser_id(userId);  //添加用户ID
         userinfo.setUser_name(Constant.userName);//添加用户名
         userinfo.setUser_gender(Constant.usergender);//添加用户性别
         SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
@@ -159,26 +175,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.choose_user1:
-                Constant.userId = "001";
+                userId = "001";
                 Constant.userName = "测试用户1";
                 Constant.usergender = "f";
-                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                HD.TLOG("选择成功： " + userId + "  " + Constant.userName);
                 Constant.curtoken = Constant.token1;
                 startIM(Constant.token1);
                 break;
             case R.id.choose_user2:
-                Constant.userId = "n002";
+                userId = "n002";
                 Constant.userName = "新用户2";
                 Constant.usergender = "f";
-                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                HD.TLOG("选择成功： " + userId + "  " + Constant.userName);
                 Constant.curtoken = Constant.token2;
                 startIM(Constant.token2);
                 break;
             case R.id.choose_user3:
-                Constant.userId = "003";
+                userId = "003";
                 Constant.userName = "测试用户3";
                 Constant.usergender = "m";
-                HD.TLOG("选择成功： " + Constant.userId + "  " + Constant.userName);
+                HD.TLOG("选择成功： " + userId + "  " + Constant.userName);
                 Constant.curtoken = Constant.token3;
                 startIM(Constant.token3);
                 break;
@@ -186,10 +202,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 2);
                 break;
             case R.id.choose_preuser:
-                String token = null;
-
                 if (DemoContext.getInstance() != null) {
-
                     token = DemoContext.getInstance().getSharedPreferences().getString("USER_TOKEN", "default");
                 }
                 startIM(token);
@@ -204,31 +217,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 //                getTokenFromCloud(Constant.RuserId,Constant.RuserName,Constant.RuserIcon);
                 startActivity(new Intent(ctx, RegisteActivity.class));
                 break;
+            case R.id.user_login:
+                account = user_account.getText().toString();
+                password = user_password.getText().toString();
+                BmobQuery<User> query = new BmobQuery<User>("User");
+                query.addWhereEqualTo("user_id", account);
+                query.findObjects(new FindListener<User>() {
+                    @Override
+                    public void done(List<User> list, BmobException e) {
+                        User user = list.get(0);
+                        String account_remote = user.getUser_id();
+                        String password_remote = user.getUser_password();
+                        if (account.equals(account_remote) && password.equals(password_remote)) {
+                            //先从本地的缓存文件获取，如果没有就访问服务器获取,如果有就直接登录
+                            token = DemoContext.getInstance().getSharedPreferences().getString(account, "no");
+                            Constant.curtoken = token;
+                            if (token.equals("no")) {
+                                getTokenFromCloud(account, user.getUser_name(), user.getUser_icon().getFileUrl());
+                            } else {
+                                startActivity(new Intent(ctx, MainActivity.class));
+                            }
+                        }
+                    }
+                });
+                break;
         }
-    }
-
-    private void getTokenFromCloud(String userId, String userName, String userIcon) {
-        AsyncCustomEndpoints ace = new AsyncCustomEndpoints();
-//第一个参数是上下文对象，第二个参数是云端逻辑的方法名称，第三个参数是上传到云端逻辑的参数列表（JSONObject cloudCodeParams），第四个参数是回调类
-        JSONObject cloudCodeParams = new JSONObject();
-        try {
-            cloudCodeParams.put("userId", userId);
-            cloudCodeParams.put("name", userName);
-            cloudCodeParams.put("portraitUri", userIcon);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        ace.callEndpoint("getToken", cloudCodeParams, new CloudCodeListener() {
-            @Override
-            public void done(Object object, BmobException e) {
-                if (e == null) {
-                    String result = object.toString();
-                    HD.TLOG("云端逻辑返回值：" + result);
-                } else {
-                    HD.LOG(" " + e.getMessage());
-                }
-            }
-        });
     }
 
     private void loginWithQQorWechat(final String platform_name) {
@@ -245,7 +258,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     String userGender = platform.getDb().getUserGender();
                     String userId = platform.getDb().getUserId();
                     HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userId + " " + userIcon);
-                    Constant.userId = userId;
+                    userId = userId;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
                     Constant.curtoken = Constant.QQtoken1;
@@ -286,6 +299,81 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }).start();
     }
+
+    private void getTokenFromCloud(String userId, String userName, String userIcon) {
+        AsyncCustomEndpoints ace = new AsyncCustomEndpoints();
+//第一个参数是上下文对象，第二个参数是云端逻辑的方法名称，第三个参数是上传到云端逻辑的参数列表（JSONObject cloudCodeParams），第四个参数是回调类
+        JSONObject cloudCodeParams = new JSONObject();
+        try {
+            cloudCodeParams.put("userId", userId);
+            cloudCodeParams.put("name", userName);
+            cloudCodeParams.put("portraitUri", userIcon);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ace.callEndpoint("getToken", cloudCodeParams, new CloudCodeListener() {
+            @Override
+            public void done(Object object, BmobException e) {
+                if (e == null) {
+                    String result1 = object.toString().replace("\\", "");
+                    String result = result1.substring(1, result1.length() - 1);
+                    HD.TLOG("云端逻辑返回值：" + result);
+                    //解析token
+                    analyResultToGetToken(result);
+                } else {
+                    HD.LOG(" " + e.getMessage());
+                }
+            }
+        });
+    }
+
+    private void analyResultToGetToken(String json) {
+        try {
+            JSONObject object = new JSONObject(json);
+            token = object.getString("token");
+            Constant.curtoken = token;
+            RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {
+
+                /**
+                 * Token 错误。可以从下面两点检查 1.  Token 是否过期，如果过期您需要向 App Server 重新请求一个新的 Token
+                 *                  2.  token 对应的 appKey 和工程里设置的 appKey 是否一致
+                 */
+                @Override
+                public void onTokenIncorrect() {
+                    Log.i("LHD", "--onTokenIncorrect");
+                }
+
+                /**
+                 * 连接融云成功
+                 * @param userid 当前 token 对应的用户 id
+                 */
+                @Override
+                public void onSuccess(String userid) {
+                    Log.i("LHD", "--onSuccess" + userid);
+                    startActivity(new Intent(ctx, MainActivity.class));
+                    finish();
+                }
+
+                /**
+                 * 连接融云失败
+                 * @param errorCode 错误码，可到官网 查看错误码对应的注释
+                 */
+                @Override
+                public void onError(RongIMClient.ErrorCode errorCode) {
+                    Log.i("LHD", "onError: " + errorCode);
+                }
+            });
+            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+            edit.putString(Constant.userId, Constant.curtoken);
+            edit.putString("USER_TOKEN", Constant.curtoken);
+            HD.LOG("保存token: " + Constant.curtoken);
+            edit.apply();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

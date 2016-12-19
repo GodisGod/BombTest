@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
+import com.example.bombtest.util.GlideCircleTransform;
 import com.example.bombtest.util.HD;
 
 import io.rong.imkit.RongIM;
@@ -44,23 +45,11 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
         text = intent.getStringExtra("text");
         objectId = intent.getStringExtra("objectid");
         userId = intent.getStringExtra("userId");
+        userIcon = intent.getStringExtra("userIcon");
         HD.LOG("imgurl: " + img_url);
         HD.LOG("text: " + text);
         HD.LOG("objectId: " + objectId);
 
-
-//        final PaperMessage paperMessage = new PaperMessage();
-//        paperMessage.setObjectId(objectId);
-//        paperMessage.delete(new UpdateListener() {
-//            @Override
-//            public void done(BmobException e) {
-//                if (e == null) {
-//                    Log.i("LHD", "刪除成功" + paperMessage.getUpdatedAt());
-//                } else {
-//                    Log.i("LHD", "刪除失败" + e.getMessage());
-//                }
-//            }
-//        });
         initview();
 
         initData();
@@ -78,8 +67,9 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
         gone_with_wind.setOnClickListener(this);
         Glide.with(ctx).load(userIcon)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
+                .transform(new GlideCircleTransform(ctx))
                 .placeholder(R.mipmap.ic_launcher)
-                .centerCrop()  //转换宽高比
+//                .centerCrop()  //转换宽高比
                 .into(target_img);
     }
 
