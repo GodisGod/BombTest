@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -44,12 +46,14 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
     private ImageView user_icon;
     private Button btn_reg;
     private Context ctx;
-    private String[] gender = {"f", "m", "no"};
+    //    private String[] gender = {"f", "m", "no"};
+    private String gender = "m";
     private Random random;
     private String userId;
     private String userName;
     private String userIcon;
-
+    private RadioGroup radioGroup;
+    private RadioButton radioButton;
     private String token;
 
     @Override
@@ -67,7 +71,20 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         user_name = (EditText) findViewById(R.id.reg_et_user_name);
         user_icon = (ImageView) findViewById(R.id.reg_img_user_icon);
         btn_reg = (Button) findViewById(R.id.reg_btn_reg);
-
+        radioGroup = (RadioGroup) findViewById(R.id.radioGroup);
+        radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                radioButton = (RadioButton) findViewById(radioGroup.getCheckedRadioButtonId());
+                if (radioButton.getId() == R.id.radioMale) {
+                    gender = "m";
+                } else if (radioButton.getId() == R.id.radioFemale) {
+                    gender = "f";
+                } else {
+                    gender = "no";
+                }
+            }
+        });
         user_icon.setOnClickListener(this);
         btn_reg.setOnClickListener(this);
     }
@@ -87,7 +104,11 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                 }
                 Constant.userId = userId;
                 Constant.userName = userName;
-                Constant.usergender = gender[random.nextInt(2)];
+                if (gender.isEmpty()) {
+                    HD.TLOG("请选择性别");
+                    return;
+                }
+                Constant.usergender = gender;
                 uploadUserinfo();
                 break;
         }
