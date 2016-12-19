@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.amap.api.location.AMapLocation;
@@ -13,6 +15,7 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 import com.example.bombtest.R;
+import com.example.bombtest.adapter.ScripAdapter;
 import com.example.bombtest.bean.PaperMessage;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
@@ -32,13 +35,14 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
     private SwipeRefreshLayout swipeRefreshLayout;
     private ListView listView;
 
-    private double range = 100;
+    private double range = 500;
     private double lat;
     private double lng;
     private Context ctx;
     private Intent intent;
 
     private List<PaperMessage> scrips;
+    private ScripAdapter adapter;
     //高德定位
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -74,6 +78,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
         setContentView(R.layout.activity_discover);
         ctx = this;
         scrips = new ArrayList<PaperMessage>();
+        adapter = new ScripAdapter(this, scrips);
         initView();
         initLocation();
     }
@@ -84,6 +89,41 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
 //        btn_discover.setOnClickListener(this);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.discover_swip);
         listView = (ListView) findViewById(R.id.list_scrip);
+        listView.setAdapter(adapter);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                PaperMessage p = scrips.get(i);
+                intent = new Intent(ctx, Scrip.class);
+                intent.putExtra("userId", p.getUser_id());
+                intent.putExtra("objectid", p.getObjectId());
+                if (p.getSend_img_message()==null) {
+                    intent.putExtra("imgurl", "");
+                } else {
+                    intent.putExtra("imgurl", p.getSend_img_message().getFileUrl());
+                }
+                if (p.getSend_text_message().isEmpty()) {
+                    intent.putExtra("text", "");
+                } else {
+                    intent.putExtra("text", p.getSend_text_message());
+                }
+                if (p.getSend_audio()==null) {
+                    intent.putExtra("audio", "");
+                } else {
+                    intent.putExtra("audio", p.getSend_audio().getFileUrl());
+                }
+
+                intent.putExtra("gender", p.getGender());
+                startActivity(intent);
+            }
+        });
+        listView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                HD.TLOG("长按删除");
+                return false;
+            }
+        });
         //设置刷新时动画的颜色，可以设置4个
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(android.R.color.holo_blue_bright),
@@ -173,15 +213,12 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             @Override
             public void done(List<PaperMessage> list, BmobException e) {
                 if (e == null) {
-                    Log.i("LHD", "查询成功：共" + list.size() + "条数据。");
-                    HD.TOS("查询成功：共" + list.size() + "条数据。");
-                    StringBuilder sb = new StringBuilder();
+                    HD.TLOG("查询成功：共" + list.size() + "条数据。");
                     for (PaperMessage m : list) {
-                        Log.i("LHD", "message: " + m.getSend_text_message());
-                        sb.append(m.getSend_text_message() + "  D上传的图片：" + m.getSend_img_message().getFileUrl() + "\n");
-//                                HD.TLOG(sb.toString());
+                        HD.LOG("the message: " + m.getSend_text_message() + " | " + m.getGender());
                         HD.TLOG("m.getUser_id(): " + m.getUser_id() + " Constant.userId: " + Constant.userId + "  " + (m.getUser_id().equals(Constant.userId)));
                         HD.TLOG("m.getGender(): " + m.getGender() + " Constant.usergender: " + Constant.usergender + "  " + (m.getGender().equals(Constant.usergender)));
+                        HD.LOG("====" + (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)));
                         //将不是本人的、异性的纸片加入到scrips中
                         if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
 //                            intent = new Intent(ctx, ChooseScrip.class);
@@ -194,17 +231,25 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
 //                            break;
                             scrips.add(m);
                             //如果发现了10条数据就终止循环（最多展示10条）
-                            if (scrips.size()>=10){
+                            if (scrips.size() >= 10) {
                                 break;
                             }
                             HD.TLOG("发现的纸片： " + m.getUser_id() + m.getGender());
                         }
                     }
 
+                    adapter.notifyDataSetChanged();
+                    swipeRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //必须这样关闭
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
 //                    startActivity(intent);
 
                 } else {
-                    Log.i("LHD", "查询失败：" + e.getMessage());
+                    HD.LOG("discover查询失败：" + e.getMessage());
                 }
             }
         });

@@ -20,12 +20,17 @@ import com.example.bombtest.callback.downloadIconCallback;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
+import cn.bmob.v3.AsyncCustomEndpoints;
 import cn.bmob.v3.datatype.BmobFile;
 import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.CloudCodeListener;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UploadFileListener;
 import cn.sharesdk.framework.Platform;
@@ -46,6 +51,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private Button pre_user;
     private Button login_QQ;
     private Button login_Weixin;
+    private Button logic_cloud;
     private ImageView choose_user_icon;
 
     @Override
@@ -67,7 +73,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         pre_user = (Button) findViewById(R.id.choose_preuser);
         login_QQ = (Button) findViewById(R.id.login_by_QQ);
         login_Weixin = (Button) findViewById(R.id.login_by_weixin);
-
+        logic_cloud = (Button) findViewById(R.id.logic_cloud);
         choose_user_icon = (ImageView) findViewById(R.id.chooser_user_icon);
         user1_001.setOnClickListener(this);
         user1_123.setOnClickListener(this);
@@ -76,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         login_QQ.setOnClickListener(this);
         login_Weixin.setOnClickListener(this);
         choose_user_icon.setOnClickListener(this);
-
+        logic_cloud.setOnClickListener(this);
     }
 
     private void uploadUserinfo() {
@@ -194,8 +200,35 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.login_by_weixin:
                 loginWithQQorWechat(Wechat.NAME);
                 break;
-
+            case R.id.logic_cloud:
+//                getTokenFromCloud(Constant.RuserId,Constant.RuserName,Constant.RuserIcon);
+                startActivity(new Intent(ctx, RegisteActivity.class));
+                break;
         }
+    }
+
+    private void getTokenFromCloud(String userId, String userName, String userIcon) {
+        AsyncCustomEndpoints ace = new AsyncCustomEndpoints();
+//第一个参数是上下文对象，第二个参数是云端逻辑的方法名称，第三个参数是上传到云端逻辑的参数列表（JSONObject cloudCodeParams），第四个参数是回调类
+        JSONObject cloudCodeParams = new JSONObject();
+        try {
+            cloudCodeParams.put("userId", userId);
+            cloudCodeParams.put("name", userName);
+            cloudCodeParams.put("portraitUri", userIcon);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ace.callEndpoint("getToken", cloudCodeParams, new CloudCodeListener() {
+            @Override
+            public void done(Object object, BmobException e) {
+                if (e == null) {
+                    String result = object.toString();
+                    HD.TLOG("云端逻辑返回值：" + result);
+                } else {
+                    HD.LOG(" " + e.getMessage());
+                }
+            }
+        });
     }
 
     private void loginWithQQorWechat(final String platform_name) {
@@ -286,4 +319,5 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String uname = platform.getDb().getUserName();
         HD.TLOG("onCancel: " + uname);
     }
+
 }

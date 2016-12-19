@@ -21,6 +21,8 @@ public class PaperMessage extends BmobObject {
         return type;
     }
 
+
+
     public void setType(int type) {
         this.type = type;
     }

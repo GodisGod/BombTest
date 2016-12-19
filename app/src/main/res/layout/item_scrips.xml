@@ -5,18 +5,40 @@
     android:padding="5dp">
 
     <ImageView
-        android:id="@+id/item_scrip_head"
+        android:id="@+id/item_scrip_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:layout_centerVertical="true" />
-
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_centerInParent="true" />
+        android:layout_centerVertical="true"
+        android:background="@mipmap/ic_launcher" />
 
     <TextView
+        android:id="@+id/item_scrip_gender_type"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/item_scrip_icon"
+        android:text="清纯萝莉"
+        android:textSize="16sp" />
+
+    <TextView
+
         android:id="@+id/item_scrip_text"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_scrip_gender_type"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_toRightOf="@id/item_scrip_icon"
+        android:text="这是一条不可描述的图文消息"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/item_scrip_create_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="5dp"
+        android:text="发布时间" />
 </RelativeLayout>

@@ -26,4 +26,9 @@ public class Constant {
     public static final int Paper_AUDIO = 2;
     public static final int Paper_IMG = 3;
     public static final int Paper_TEXT_IMG = 4;
+
+    //云端逻辑测试
+    public static String RuserId = "";
+    public static String RuserName = "";
+    public static String RuserIcon = "";
 }

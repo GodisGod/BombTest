@@ -62,13 +62,9 @@
         </activity>
         <activity
             android:name=".activity.MainActivity"
-            android:screenOrientation="portrait">
-
-        </activity>
+            android:screenOrientation="portrait"></activity>
         <activity android:name=".activity.ChooseScrip" />
-        <activity android:name=".activity.Scrip"></activity>
-
-
+        <activity android:name=".activity.Scrip" />
         <activity android:name=".activity.PhotosWall" />
         <activity
             android:name="com.mob.tools.MobUIShell"
@@ -100,7 +96,7 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".activity.Loginwithother" />
-        <activity android:name=".activity.Discover"></activity>
+        <activity android:name=".activity.Discover" />
 
         <!-- IM 相关 -->
         <!-- 会话列表 -->
@@ -120,12 +116,11 @@
             </intent-filter>
         </activity>
 
-        <!--会话界面-->
+        <!-- 会话界面 -->
         <activity
             android:name=".activity.ConversationActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize">
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -139,8 +134,10 @@
         </activity>
 
         <receiver android:name=".SealNotificationReceiver" />
+
         <service android:name="com.amap.api.location.APSService" />
 
+        <activity android:name=".activity.RegisteActivity"></activity>
     </application>
 
 </manifest>
