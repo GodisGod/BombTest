@@ -88,9 +88,9 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 PaperMessageUser p = scrips.get(i);
                 intent = new Intent(ctx, Scrip.class);
-                intent.putExtra("userId", p.getUser_id());
+                intent.putExtra("target_userId", p.getUser_id());
                 intent.putExtra("objectid", p.getObjectId());
-                intent.putExtra("userIcon",p.getUserIcon());
+                intent.putExtra("target_userIcon",p.getUserIcon());
                 if (p.getSend_img_message() == null) {
                     intent.putExtra("imgurl", "");
                 } else {
@@ -107,7 +107,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                     intent.putExtra("audio", p.getSend_audio().getFileUrl());
                 }
 
-                intent.putExtra("gender", p.getGender());
+                intent.putExtra("target_gender", p.getGender());
 
                 startActivity(intent);
             }

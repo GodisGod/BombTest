@@ -12,9 +12,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.example.bombtest.R;
+import com.example.bombtest.bean.User;
 import com.example.bombtest.util.GlideCircleTransform;
 import com.example.bombtest.util.HD;
 
+import java.util.List;
+
+import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.FindListener;
 import io.rong.imkit.RongIM;
 
 public class Scrip extends AppCompatActivity implements View.OnClickListener {
@@ -26,8 +32,8 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
     private String img_url;
     private String text;
     private String objectId;
-    private String userId;
-    private String userIcon;
+    private String target_userId;
+    private String target_userIcon;
     private String userName;
 
     private ImageView target_img;
@@ -44,8 +50,16 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
         img_url = intent.getStringExtra("imgurl");
         text = intent.getStringExtra("text");
         objectId = intent.getStringExtra("objectid");
-        userId = intent.getStringExtra("userId");
-        userIcon = intent.getStringExtra("userIcon");
+        target_userId = intent.getStringExtra("target_userId");
+        BmobQuery<User> query = new BmobQuery<User>();
+        query.addWhereEqualTo("user_id",target_userId);
+        query.findObjects(new FindListener<User>() {
+            @Override
+            public void done(List<User> list, BmobException e) {
+                userName = list.get(0).getUser_name();
+            }
+        });
+        target_userIcon = intent.getStringExtra("target_userIcon");
         HD.LOG("imgurl: " + img_url);
         HD.LOG("text: " + text);
         HD.LOG("objectId: " + objectId);
@@ -65,7 +79,7 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
 
         huifu.setOnClickListener(this);
         gone_with_wind.setOnClickListener(this);
-        Glide.with(ctx).load(userIcon)
+        Glide.with(ctx).load(target_userIcon)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .transform(new GlideCircleTransform(ctx))
                 .placeholder(R.mipmap.ic_launcher)
@@ -89,8 +103,8 @@ public class Scrip extends AppCompatActivity implements View.OnClickListener {
             case R.id.huifu:
                 //todo 开启私聊页面
                 if (RongIM.getInstance() != null) {
-                    HD.LOG("开启私聊页面");
-                    RongIM.getInstance().startPrivateChat(ctx, userId, userName);
+                    HD.LOG("开启私聊页面  "+target_userId);
+                    RongIM.getInstance().startPrivateChat(ctx, target_userId, userName);
                     //todo 接收预置消息
                     finish();
                 }

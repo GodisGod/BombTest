@@ -27,13 +27,11 @@ public class UserInfoProvider implements RongIM.UserInfoProvider {
         //todo 根据ID 获取用户的头像
         BmobQuery query = new BmobQuery("User");
         query.addWhereEqualTo("user_id", userId);
-//        query.setLimit(2);
-        query.order("createAt");
         query.findObjectsByTable(new QueryListener<JSONArray>() {
             @Override
             public void done(JSONArray jsonArray, BmobException e) {
                 if (e == null) {
-                    HD.TLOG("查詢成功：" + jsonArray.toString());
+                    HD.TLOG("查詢用户头像成功：" + jsonArray.toString());
                     //todo 解析json获取userinfo数据
                     userInfo = anlyUserinfo(jsonArray);
                     //todo 返回UserInfo
