@@ -87,7 +87,7 @@
                 android:text="微信登录" />
 
             <Button
-                android:id="@+id/logic_cloud"
+                android:id="@+id/reg_new_user"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:text="注册新用户" />

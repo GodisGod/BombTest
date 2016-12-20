@@ -36,7 +36,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         img_url = intent.getStringExtra("imgurl");
         text = intent.getStringExtra("text");
         objectId = intent.getStringExtra("objectid");
-        userId = intent.getStringExtra("userId");
+        userId = intent.getStringExtra("Cur_userId");
         userName = intent.getStringExtra("userName");
         userIcon = intent.getStringExtra("Cur_userIcon");
         userGender = intent.getStringExtra("gender");
@@ -59,7 +59,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         intent.putExtra("imgurl", img_url);
         intent.putExtra("text", text);
         intent.putExtra("objectid", objectId);
-        intent.putExtra("userId", userId);
+        intent.putExtra("Cur_userId", userId);
         intent.putExtra("gender", userGender);
         startActivity(intent);
         finish();

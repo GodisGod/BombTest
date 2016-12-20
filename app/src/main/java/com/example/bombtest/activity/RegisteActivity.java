@@ -176,7 +176,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
 //第一个参数是上下文对象，第二个参数是云端逻辑的方法名称，第三个参数是上传到云端逻辑的参数列表（JSONObject cloudCodeParams），第四个参数是回调类
         JSONObject cloudCodeParams = new JSONObject();
         try {
-            cloudCodeParams.put("userId", userId);
+            cloudCodeParams.put("Cur_userId", userId);
             cloudCodeParams.put("name", userName);
             cloudCodeParams.put("portraitUri", userIcon);
         } catch (JSONException e) {

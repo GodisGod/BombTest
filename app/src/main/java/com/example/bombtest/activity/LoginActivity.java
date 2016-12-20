@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         pre_user = (Button) findViewById(R.id.choose_preuser);
         login_QQ = (Button) findViewById(R.id.login_by_QQ);
         login_Weixin = (Button) findViewById(R.id.login_by_weixin);
-        logic_cloud = (Button) findViewById(R.id.logic_cloud);
+        logic_cloud = (Button) findViewById(R.id.reg_new_user);
         user_account = (EditText) findViewById(R.id.user_account);
         user_password = (EditText) findViewById(R.id.user_password);
         user_login = (Button) findViewById(R.id.user_login);
@@ -189,8 +189,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             case R.id.login_by_weixin:
                 loginWithQQorWechat(Wechat.NAME);
                 break;
-            case R.id.logic_cloud:
-//                getTokenFromCloud(Constant.RuserId,Constant.RuserName,Constant.RuserIcon);
+            case R.id.reg_new_user:
                 startActivity(new Intent(ctx, RegisteActivity.class));
                 break;
             case R.id.user_login:
@@ -234,23 +233,23 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         platform.setPlatformActionListener(this);
         HD.TLOG("platform.isValid(): " + platform.isValid());
         if (platform.isValid()) {
+            final String userid = platform.getDb().getUserId();
             final String uname = platform.getDb().getUserName();
             final String usericon = platform.getDb().getUserIcon();
             password = platform.getDb().getUserId() + "qq_login";
             final String userGender = platform.getDb().getUserGender();
-            final String userid = platform.getDb().getUserId();
             HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userid + " " + Cur_userIcon);
             //下载图片到本地,开启子线程
             downloadIcon(usericon, new downloadIconCallback() {
                 @Override
-                public void onFinish() {
+                public void onFinish(String icon_path) {
                     Constant.Cur_userId = userid;
                     Constant.userPassword = password;
-                    Constant.Cur_userIcon = usericon;
+                    Constant.Cur_userIcon = icon_path;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
                     Constant.sign = "QQ登录";
-                    uploadUserinfo(userid,password,usericon,uname,userGender, Constant.sign);
+                    uploadUserinfo(userid,password,icon_path,uname,userGender, Constant.sign);
                 }
 
                 @Override
@@ -258,6 +257,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     HD.LOG("下载头像失败: " + e.getMessage());
                 }
             });
+
+
 
 
         } else {
@@ -272,9 +273,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     File file = Glide.with(ctx).load(icon).downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
                     HD.LOG("QQ头像本地路径： " + file.getAbsolutePath());
-                    Cur_userIcon = file.getAbsolutePath();
                     if (listener != null) {
-                        listener.onFinish();
+                        listener.onFinish(file.getAbsolutePath());
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

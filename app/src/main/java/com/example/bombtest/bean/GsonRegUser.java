@@ -7,7 +7,7 @@ public class GsonRegUser {
 
     /**
      * code : 200
-     * userId : 005
+     * Cur_userId : 005
      * token : scCwUbxtcmatZ9wi0MLxZ/gexAdqvb9hcKGVQbyaqfMu63Jjhjvpefm2mutjY84KWH0Fsx2iRuI7mA+Ioh8twA==
      */
 
@@ -43,7 +43,7 @@ public class GsonRegUser {
     public String toString() {
         return "GsonRegUser{" +
                 "code=" + code +
-                ", userId='" + userId + '\'' +
+                ", Cur_userId='" + userId + '\'' +
                 ", token='" + token + '\'' +
                 '}';
     }

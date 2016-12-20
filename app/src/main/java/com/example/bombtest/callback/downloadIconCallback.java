@@ -5,7 +5,7 @@ package com.example.bombtest.callback;
  */
 public interface downloadIconCallback {
     //访问成功的回调接口
-    void onFinish();
+    void onFinish(String icon_path);
     //访问失败的回调接口
     void onError(Exception e);
 }
