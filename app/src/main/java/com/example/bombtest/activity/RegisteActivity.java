@@ -148,9 +148,9 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                                 public void done(List<User> list, BmobException e) {
                                     if (e == null) {
                                         userIcon = list.get(0).getUser_icon().getFileUrl();
-                                        HD.TLOG("findObjects: " + list.get(0).getUser_name() + "  " + list.get(0).getUser_icon().getFileUrl());
+                                        HD.TLOG("findObjects size: "+list.size()+" "+userId+"  " + list.get(0).getUser_name() + "  " + list.get(0).getUser_icon().getFileUrl());
                                         //将新用户数据添加到数据库User表中
-                                        getTokenFromCloud(id, name, userIcon);
+                                        getTokenFromCloud(userId, userName, userIcon);
                                     } else {
                                         HD.LOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
                                     }
@@ -176,7 +176,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
 //第一个参数是上下文对象，第二个参数是云端逻辑的方法名称，第三个参数是上传到云端逻辑的参数列表（JSONObject cloudCodeParams），第四个参数是回调类
         JSONObject cloudCodeParams = new JSONObject();
         try {
-            cloudCodeParams.put("Cur_userId", userId);
+            cloudCodeParams.put("userId", userId);
             cloudCodeParams.put("name", userName);
             cloudCodeParams.put("portraitUri", userIcon);
         } catch (JSONException e) {
@@ -205,10 +205,6 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
             Constant.curtoken = token;
             Constant.Cur_userId = userId;
             HD.TLOG("解析token: " + userId + "  " + token);
-            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-            edit.putString(Constant.Cur_userId, Constant.curtoken);
-            HD.LOG("保存token: " + Constant.curtoken);
-            edit.apply();
             RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {
 
                 /**
@@ -227,6 +223,11 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                 @Override
                 public void onSuccess(String userid) {
                     Log.i("LHD", "--onSuccess" + userid);
+                    SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+                    edit.putString(Constant.Cur_userId, Constant.curtoken);
+                    edit.putString("USER_TOKEN", Constant.curtoken);
+                    HD.LOG("保存token: " + Constant.curtoken);
+                    edit.apply();
                     startActivity(new Intent(ctx, MainActivity.class));
                     finish();
                 }
