@@ -106,7 +106,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
                     HD.TLOG("信息不完整");
                     return;
                 }
-                Constant.userId = userId;
+                Constant.Cur_userId = userId;
                 Constant.userPassword = userPassword;
                 Constant.userName = userName;
                 if (gender.isEmpty()) {
@@ -203,10 +203,10 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
             JSONObject object = new JSONObject(json);
             token = object.getString("token");
             Constant.curtoken = token;
-            Constant.userId = userId;
+            Constant.Cur_userId = userId;
             HD.TLOG("解析token: " + userId + "  " + token);
             SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-            edit.putString(Constant.userId, Constant.curtoken);
+            edit.putString(Constant.Cur_userId, Constant.curtoken);
             HD.LOG("保存token: " + Constant.curtoken);
             edit.apply();
             RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {

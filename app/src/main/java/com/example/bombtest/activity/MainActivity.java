@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void initview() {
         send_content = (EditText) findViewById(R.id.ed_content);
         title = (TextView) findViewById(R.id.main_title);
-        title.setText("当前用户： " + Constant.userId + "  " + Constant.userName);
+        title.setText("当前用户： " + Constant.Cur_userId + "  " + Constant.userName);
         HD.LOG("当前的Token:  " + Constant.curtoken);
         send_img_choose = (ImageView) findViewById(R.id.img_send);
         choose_user_icon = (ImageView) findViewById(R.id.img_user_icon);
@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.query_userinfo:
                 BmobQuery query = new BmobQuery("User");
-                query.addWhereEqualTo("user_id", Constant.userId);
+                query.addWhereEqualTo("user_id", Constant.Cur_userId);
 //        query.setLimit(2);
                 query.order("createAt");
                 query.findObjectsByTable(new QueryListener<JSONArray>() {
@@ -300,7 +300,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             message.setSend_audio(null);
             message.setSend_img_message(bmobFile);
         }
-        message.setUser_id(Constant.userId);
+        message.setUser_id(Constant.Cur_userId);
         message.setGender(Constant.usergender);
         message.setGpsAdd(new BmobGeoPoint(lng, lat));
         //开始上传

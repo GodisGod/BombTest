@@ -195,9 +195,9 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                     HD.TLOG("查询成功：共" + list.size() + "条数据。");
                     for (final PaperMessage m : list) {
                         HD.LOG("the message: " + m.getSend_text_message() + " | " + m.getGender());
-                        HD.LOG("====" + (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)));
+                        HD.LOG("====" + (!m.getUser_id().equals(Constant.Cur_userId) && !m.getGender().equals(Constant.usergender)));
                         //将不是本人的、异性的纸片加入到scrips中
-                        if (!m.getUser_id().equals(Constant.userId) && !m.getGender().equals(Constant.usergender)) {
+                        if (!m.getUser_id().equals(Constant.Cur_userId) && !m.getGender().equals(Constant.usergender)) {
                             BmobQuery<User> query = new BmobQuery<User>("User");
                             query.addWhereEqualTo("user_id", m.getUser_id());
                             query.findObjects(new FindListener<User>() {

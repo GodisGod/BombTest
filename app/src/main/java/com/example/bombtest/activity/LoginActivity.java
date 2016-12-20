@@ -46,7 +46,6 @@ import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 
 import static com.example.bombtest.constant.Constant.userIcon;
-import static com.example.bombtest.constant.Constant.userId;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, PlatformActionListener {
@@ -107,11 +106,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         userinfo.setUser_password(password);//添加用户密码
         userinfo.setUser_name(name);//添加用户名
         userinfo.setUser_gender(gender);//添加用户性别
-        SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-        edit.putString(userId, Constant.curtoken);
-        edit.putString("USER_TOKEN", Constant.curtoken);
-        HD.LOG("保存token: " + Constant.curtoken);
-        edit.apply();
+        userinfo.setUser_sign(sign);
         //添加图片
         if (!userIcon.isEmpty()) {
             final File file = new File(icon);
@@ -120,44 +115,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void done(BmobException e) {
                     userinfo.setUser_icon(bmobFile);//添加用户头像
-                    userinfo.setUser_sign(sign);//添加用户签名
                     userinfo.save(new SaveListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
                             HD.TLOG("用户信息保存到数据库成功: " + s);
                             HD.TLOG("userinfo: " + userinfo.getUser_id() + " " + userinfo.getUser_name() + "  " + userinfo.getUser_sign());
-//                            RongIM.connect(Constant.curtoken, new RongIMClient.ConnectCallback() {
-//
-//                                /**
-//                                 * Token 错误。可以从下面两点检查 1.  Token 是否过期，如果过期您需要向 App Server 重新请求一个新的 Token
-//                                 *                  2.  token 对应的 appKey 和工程里设置的 appKey 是否一致
-//                                 */
-//                                @Override
-//                                public void onTokenIncorrect() {
-//                                    Log.i("LHD", "--onTokenIncorrect");
-//                                }
-//
-//                                /**
-//                                 * 连接融云成功
-//                                 * @param userid 当前 token 对应的用户 id
-//                                 */
-//                                @Override
-//                                public void onSuccess(String userid) {
-//                                    Log.i("LHD", "--onSuccess" + userid);
-//                                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//                                    finish();
-//                                }
-//
-//                                /**
-//                                 * 连接融云失败
-//                                 * @param errorCode 错误码，可到官网 查看错误码对应的注释
-//                                 */
-//                                @Override
-//                                public void onError(RongIMClient.ErrorCode errorCode) {
-//                                    Log.i("LHD", "onError: " + errorCode);
-//                                }
-//                            });
-                            getTokenFromCloud(Constant.userId, Constant.userName, Constant.userIcon);
+                            getTokenFromCloud(Constant.Cur_userId, Constant.userName, Constant.userIcon);
                         }
                     });
                 }
@@ -177,31 +140,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.choose_user1:
-                userId = "001";
+                Constant.Cur_userId = "001";
                 Constant.userName = "大娃出山啦";
                 Constant.usergender = "f";
                 Constant.userPassword = "123";
                 Constant.curtoken = Constant.token1;
                 Constant.sign = "测试用户1";
-                uploadUserinfo(userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.choose_user2:
-                userId = "n002";
+                Constant.Cur_userId = "n002";
                 Constant.userPassword = "123";
                 Constant.userName = "新用户2";
                 Constant.usergender = "f";
                 Constant.curtoken = Constant.token2;
                 Constant.sign = "测试用户2";
-                uploadUserinfo(userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.choose_user3:
-                userId = "003";
+                Constant.Cur_userId = "003";
                 Constant.userPassword = "123";
                 Constant.userName = "测试用户3";
                 Constant.usergender = "m";
                 Constant.curtoken = Constant.token3;
                 Constant.sign = "测试用户3";
-                uploadUserinfo(userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.chooser_user_icon:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 2);
@@ -212,7 +175,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Constant.curtoken = token;
                 }
                 //todo 这些信息应该保存在文件里
-                uploadUserinfo(userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.login_by_QQ:
                 loginWithQQorWechat(QQ.NAME);
@@ -243,7 +206,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Constant.sign = user.getUser_sign();
                             Constant.usergender = user.getUser_gender();
                             Constant.userName = user.getUser_name();
-                            Constant.userId = user.getUser_id();
+                            Constant.Cur_userId = user.getUser_id();
                             Constant.userIcon = user.getUser_icon().getFileUrl();
                             Constant.userPassword = user.getUser_password();
                             if (token.equals("no")) {
@@ -268,21 +231,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             final String uname = platform.getDb().getUserName();
             final String usericon = platform.getDb().getUserIcon();
             password = platform.getDb().getUserId() + "qq_login";
+            final String userGender = platform.getDb().getUserGender();
+            final String userid = platform.getDb().getUserId();
+            HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userid + " " + userIcon);
             //下载图片到本地,开启子线程
-            downloadIcon(userIcon, new downloadIconCallback() {
+            downloadIcon(usericon, new downloadIconCallback() {
                 @Override
                 public void onFinish() {
-                    String userGender = platform.getDb().getUserGender();
-                    String userid = platform.getDb().getUserId();
-                    HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userId + " " + userIcon);
-                    Constant.userId = userid;
+                    Constant.Cur_userId = userid;
                     Constant.userPassword = password;
                     Constant.userIcon = usericon;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
                     Constant.sign = "QQ登录";
-                    HD.LOG(userId + " " + Constant.userPassword + " " + userIcon + " " + Constant.userName + " " + Constant.usergender);
-                    uploadUserinfo(userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                    HD.LOG(Constant.Cur_userId + " " + Constant.userPassword + " " + userIcon + " " + Constant.userName + " " + Constant.usergender+" "+Constant.sign);
+                    uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 }
 
                 @Override
@@ -370,6 +333,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 @Override
                 public void onSuccess(String userid) {
                     Log.i("LHD", "--onSuccess" + userid);
+                    SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
+                    edit.putString(Constant.Cur_userId, Constant.curtoken);
+                    edit.putString("USER_TOKEN", Constant.curtoken);
+                    HD.LOG("保存token: " + Constant.curtoken);
+                    edit.apply();
                     startActivity(new Intent(ctx, MainActivity.class));
                     finish();
                 }
@@ -383,10 +351,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Log.i("LHD", "onError: " + errorCode);
                 }
             });
-            SharedPreferences.Editor edit = DemoContext.getInstance().getSharedPreferences().edit();
-            edit.putString(userId, Constant.curtoken);
-            HD.LOG("保存token: " + Constant.curtoken);
-            edit.apply();
         } catch (JSONException e) {
             e.printStackTrace();
         }
