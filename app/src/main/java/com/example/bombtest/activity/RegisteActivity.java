@@ -129,7 +129,7 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         userinfo.setUser_gender(gender);//添加用户性别
         userinfo.setUser_sign(sign);//添加用户签名
         //添加头像
-        if (!Constant.userIcon.isEmpty()) {
+        if (!Constant.Cur_userIcon.isEmpty()) {
             final File file = new File(icon);
             BmobFile bmobFile = new BmobFile(file);
             userinfo.setUser_icon(bmobFile);//添加用户头像
@@ -253,8 +253,8 @@ public class RegisteActivity extends AppCompatActivity implements View.OnClickLi
         if (requestCode == 3) {
             if (resultCode == RESULT_OK) {
                 userIcon = data.getStringExtra("imgurl");//更新头像
-                Constant.userIcon = userIcon;
-                Glide.with(ctx).load(Constant.userIcon)
+                Constant.Cur_userIcon = userIcon;
+                Glide.with(ctx).load(Constant.Cur_userIcon)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.mipmap.ic_launcher)
                         .centerCrop()  //转换宽高比

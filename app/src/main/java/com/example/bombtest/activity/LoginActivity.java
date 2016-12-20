@@ -45,7 +45,7 @@ import cn.sharesdk.wechat.friends.Wechat;
 import io.rong.imkit.RongIM;
 import io.rong.imlib.RongIMClient;
 
-import static com.example.bombtest.constant.Constant.userIcon;
+import static com.example.bombtest.constant.Constant.Cur_userIcon;
 
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener, PlatformActionListener {
@@ -108,8 +108,9 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         userinfo.setUser_gender(gender);//添加用户性别
         userinfo.setUser_sign(sign);
         //添加图片
-        if (!userIcon.isEmpty()) {
+        if (!Cur_userIcon.isEmpty()) {
             final File file = new File(icon);
+            HD.LOG("icon: "+icon);
             final BmobFile bmobFile = new BmobFile(file);
             bmobFile.uploadblock(new UploadFileListener() {
                 @Override
@@ -118,9 +119,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     userinfo.save(new SaveListener<String>() {
                         @Override
                         public void done(String s, BmobException e) {
-                            HD.TLOG("用户信息保存到数据库成功: " + s);
-                            HD.TLOG("userinfo: " + userinfo.getUser_id() + " " + userinfo.getUser_name() + "  " + userinfo.getUser_sign());
-                            getTokenFromCloud(Constant.Cur_userId, Constant.userName, Constant.userIcon);
+                            HD.LOG(Constant.Cur_userId + " " + Constant.userPassword + " " + Constant.Cur_userIcon + " " + Constant.userName + " " + Constant.usergender + " " + Constant.sign);
+                            if (e == null) {
+                                HD.TLOG("用户信息保存到数据库成功: " + s);
+                                HD.TLOG("userinfo: " + userinfo.getUser_id() + " " + userinfo.getUser_name() + "  " + userinfo.getUser_sign());
+                                getTokenFromCloud(Constant.Cur_userId, Constant.userName, Constant.Cur_userIcon);
+                            } else {
+                                HD.TLOG("用户信息保存到数据库失败：" + e.getMessage());
+                            }
                         }
                     });
                 }
@@ -146,7 +152,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Constant.userPassword = "123";
                 Constant.curtoken = Constant.token1;
                 Constant.sign = "测试用户1";
-                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, Cur_userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.choose_user2:
                 Constant.Cur_userId = "n002";
@@ -155,7 +161,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Constant.usergender = "f";
                 Constant.curtoken = Constant.token2;
                 Constant.sign = "测试用户2";
-                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, Cur_userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.choose_user3:
                 Constant.Cur_userId = "003";
@@ -164,7 +170,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Constant.usergender = "m";
                 Constant.curtoken = Constant.token3;
                 Constant.sign = "测试用户3";
-                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, Cur_userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.chooser_user_icon:
                 startActivityForResult(new Intent(ctx, PhotosWall.class), 2);
@@ -175,7 +181,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     Constant.curtoken = token;
                 }
                 //todo 这些信息应该保存在文件里
-                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                uploadUserinfo(Constant.Cur_userId, Constant.userPassword, Cur_userIcon, Constant.userName, Constant.usergender, Constant.sign);
                 break;
             case R.id.login_by_QQ:
                 loginWithQQorWechat(QQ.NAME);
@@ -207,7 +213,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Constant.usergender = user.getUser_gender();
                             Constant.userName = user.getUser_name();
                             Constant.Cur_userId = user.getUser_id();
-                            Constant.userIcon = user.getUser_icon().getFileUrl();
+                            Constant.Cur_userIcon = user.getUser_icon().getFileUrl();
                             Constant.userPassword = user.getUser_password();
                             if (token.equals("no")) {
                                 getTokenFromCloud(account, user.getUser_name(), user.getUser_icon().getFileUrl());
@@ -233,19 +239,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             password = platform.getDb().getUserId() + "qq_login";
             final String userGender = platform.getDb().getUserGender();
             final String userid = platform.getDb().getUserId();
-            HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userid + " " + userIcon);
+            HD.LOG(platform_name + "user: " + uname + " " + userGender + " " + userid + " " + Cur_userIcon);
             //下载图片到本地,开启子线程
             downloadIcon(usericon, new downloadIconCallback() {
                 @Override
                 public void onFinish() {
                     Constant.Cur_userId = userid;
                     Constant.userPassword = password;
-                    Constant.userIcon = usericon;
+                    Constant.Cur_userIcon = usericon;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
                     Constant.sign = "QQ登录";
-                    HD.LOG(Constant.Cur_userId + " " + Constant.userPassword + " " + userIcon + " " + Constant.userName + " " + Constant.usergender+" "+Constant.sign);
-                    uploadUserinfo(Constant.Cur_userId, Constant.userPassword, userIcon, Constant.userName, Constant.usergender, Constant.sign);
+                    uploadUserinfo(userid,password,usericon,uname,userGender, Constant.sign);
                 }
 
                 @Override
@@ -267,7 +272,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 try {
                     File file = Glide.with(ctx).load(icon).downloadOnly(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL).get();
                     HD.LOG("QQ头像本地路径： " + file.getAbsolutePath());
-                    userIcon = file.getAbsolutePath();
+                    Cur_userIcon = file.getAbsolutePath();
                     if (listener != null) {
                         listener.onFinish();
                     }
@@ -363,8 +368,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 2) {
             if (resultCode == RESULT_OK) {
-                userIcon = data.getStringExtra("imgurl");
-                Glide.with(ctx).load(userIcon)
+                Cur_userIcon = data.getStringExtra("imgurl");
+                Glide.with(ctx).load(Cur_userIcon)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .placeholder(R.mipmap.ic_launcher)
                         .centerCrop()  //转换宽高比

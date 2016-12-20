@@ -38,7 +38,7 @@ public class ChooseScrip extends AppCompatActivity implements View.OnClickListen
         objectId = intent.getStringExtra("objectid");
         userId = intent.getStringExtra("userId");
         userName = intent.getStringExtra("userName");
-        userIcon = intent.getStringExtra("userIcon");
+        userIcon = intent.getStringExtra("Cur_userIcon");
         userGender = intent.getStringExtra("gender");
     }
 

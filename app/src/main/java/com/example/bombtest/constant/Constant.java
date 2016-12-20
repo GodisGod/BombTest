@@ -19,7 +19,7 @@ public class Constant {
     public static String Cur_userId = "";
     public static String userPassword = "";
     public static String userName = "";
-    public static String userIcon = "";
+    public static String Cur_userIcon = "";
     public static String usergender = "";
     public static String sign = "";
 

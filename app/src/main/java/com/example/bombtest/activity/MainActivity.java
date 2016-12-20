@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         jump_discover.setOnClickListener(this);
         jump_conversation_list.setOnClickListener(this);
         query_userinfo.setOnClickListener(this);
-        Glide.with(ctx).load(Constant.userIcon)
+        Glide.with(ctx).load(Constant.Cur_userIcon)
                 .diskCacheStrategy(DiskCacheStrategy.NONE)
                 .placeholder(R.mipmap.ic_launcher)
                 .centerCrop()  //转换宽高比
@@ -404,8 +404,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 ////详细示例可查看BmobExample工程中BmobFileActivity类
 //final String[] filePaths = new String[2];
 //        filePaths[0] = img_url;
-//        filePaths[1] = Constant.userIcon;
-//        HD.LOG("2 " + " imgulr: " + img_url + "  userIcon: " + Constant.userIcon);
+//        filePaths[1] = Constant.Cur_userIcon;
+//        HD.LOG("2 " + " imgulr: " + img_url + "  Cur_userIcon: " + Constant.Cur_userIcon);
 //        BmobFile.uploadBatch(filePaths, new UploadBatchListener() {
 //
 //@Override
