@@ -180,7 +180,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
         scrips.clear();
         BmobQuery query = new BmobQuery("PaperMessage");
         double a = range / 1000;
-        HD.TOS("D搜索范围： " + range + " Dlat: " + lat + " ,Dlng: " + lng);
         query.addWhereWithinKilometers("gpsAdd", new BmobGeoPoint(lng, lat), a);
 //                query.addWhereNear("gpsAdd",new BmobGeoPoint(lng,lat));
         Log.i("LHD", "D发现的经纬度： " + "\n" +
@@ -192,7 +191,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             @Override
             public void done(List<PaperMessage> list, BmobException e) {
                 if (e == null) {
-                    HD.TLOG("查询成功：共" + list.size() + "条数据。");
+                    HD.LOG("查询成功：共" + list.size() + "条数据。");
                     for (final PaperMessage m : list) {
                         HD.LOG("the message: " + m.getSend_text_message() + " | " + m.getGender());
                         HD.LOG("====" + (!m.getUser_id().equals(Constant.Cur_userId) && !m.getGender().equals(Constant.usergender)));
@@ -238,7 +237,14 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                         }
                     });
                 } else {
-                    HD.LOG("discover查询失败：" + e.getMessage());
+                    HD.TLOG("discover查询失败：" + e.getMessage());
+                    swipeRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            //必须这样关闭
+                            swipeRefreshLayout.setRefreshing(false);
+                        }
+                    });
                 }
             }
         });
