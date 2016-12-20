@@ -7,12 +7,25 @@
     android:orientation="vertical"
     tools:context="com.example.bombtest.activity.Discover">
 
-    <ListView
-        android:id="@+id/list_scrip"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-    </ListView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="下拉刷新，发现纸片"
+            android:textSize="20sp" />
+
+        <ListView
+            android:id="@+id/list_scrip"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+        </ListView>
+    </LinearLayout>
     <!--<LinearLayout-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="50dp"-->

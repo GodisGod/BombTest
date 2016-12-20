@@ -14,18 +14,30 @@
         android:id="@+id/ed_content"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginLeft="10dp"
         android:hint="添加文字" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="点击下面选择要发送的图片"
+        android:textSize="20sp" />
 
     <ImageView
         android:id="@+id/img_send"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:background="#6f0a" />
+        android:layout_marginLeft="10dp"
+        android:background="#ffff" />
 
     <ImageView
         android:id="@+id/img_user_icon"
         android:layout_width="50dp"
         android:layout_height="50dp"
+        android:layout_marginLeft="10dp"
         android:layout_marginTop="10dp"
         android:background="#60af" />
 
