@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_me"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.bombtest.activity.MeActivity">
+
+    <ImageView
+        android:id="@+id/ME_User_Icon"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@mipmap/ic_launcher" />
+
+    <LinearLayout
+        android:id="@+id/lner_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ME_User_Icon"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tip_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="姓名"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/ME_User_Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ME_User_Icon"
+            android:layout_marginLeft="20dp"
+            android:text="aaaaaaaa"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/ME_User_Sign"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/lner_name"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:text="this is my sign"
+        android:textSize="20sp" />
+
+
+</RelativeLayout>

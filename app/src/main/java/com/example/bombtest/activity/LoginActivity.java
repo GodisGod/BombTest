@@ -242,14 +242,31 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             //下载图片到本地,开启子线程
             downloadIcon(usericon, new downloadIconCallback() {
                 @Override
-                public void onFinish(String icon_path) {
+                public void onFinish(final String icon_path) {
                     Constant.Cur_userId = userid;
                     Constant.userPassword = password;
                     Constant.Cur_userIcon = icon_path;
                     Constant.userName = uname;
                     Constant.usergender = userGender;
                     Constant.sign = "QQ登录";
-                    uploadUserinfo(userid,password,icon_path,uname,userGender, Constant.sign);
+                    //先检查数据库有没有注册过
+                    BmobQuery<User> query = new BmobQuery<User>();
+                    query.addWhereEqualTo("user_id",userid);
+                    query.findObjects(new FindListener<User>() {
+                        @Override
+                        public void done(List<User> list, BmobException e) {
+                            if (e==null){
+                                //有就直接登录
+                                HD.LOG("已经注册过，直接登录");
+                                getTokenFromCloud(Constant.Cur_userId, Constant.userName, Constant.Cur_userIcon);
+                            }else {
+                                //没有就注册，
+                                HD.LOG("首次注册");
+                                uploadUserinfo(userid,password,icon_path,uname,userGender, Constant.sign);
+                            }
+                        }
+                    });
+
                 }
 
                 @Override
