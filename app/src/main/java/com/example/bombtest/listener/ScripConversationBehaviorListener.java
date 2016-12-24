@@ -1,8 +1,11 @@
 package com.example.bombtest.listener;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.view.View;
 
+import com.example.bombtest.activity.MeActivity;
 import com.example.bombtest.util.HD;
 
 import io.rong.imkit.RongIM;
@@ -25,6 +28,11 @@ public class ScripConversationBehaviorListener implements RongIM.ConversationBeh
     @Override
     public boolean onUserPortraitClick(Context context, Conversation.ConversationType conversationType, UserInfo userInfo) {
         HD.LOG("onUserPortraitClick");
+        Intent intent = new Intent(context, MeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable("userinfo", userInfo);
+        intent.putExtra("userinfo", bundle);
+        context.startActivity(intent);
         return false;
     }
 
