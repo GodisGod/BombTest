@@ -7,6 +7,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -21,6 +22,7 @@ import com.example.bombtest.bean.PaperMessageUser;
 import com.example.bombtest.bean.User;
 import com.example.bombtest.constant.Constant;
 import com.example.bombtest.util.HD;
+import com.example.bombtest.util.view.SwpipeListViewOnScrollListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -90,7 +92,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                 intent = new Intent(ctx, Scrip.class);
                 intent.putExtra("target_userId", p.getUser_id());
                 intent.putExtra("objectid", p.getObjectId());
-                intent.putExtra("target_userIcon",p.getUserIcon());
+                intent.putExtra("target_userIcon", p.getUserIcon());
                 if (p.getSend_img_message() == null) {
                     intent.putExtra("imgurl", "");
                 } else {
@@ -119,6 +121,19 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                 return false;
             }
         });
+        listView.setOnScrollListener(new SwpipeListViewOnScrollListener(swipeRefreshLayout, new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView absListView, int i) {
+
+            }
+
+            @Override
+            public void onScroll(AbsListView absListView, int i, int i1, int i2) {
+
+            }
+        }));
+
+
         //设置刷新时动画的颜色，可以设置4个
         swipeRefreshLayout.setColorSchemeColors(
                 getResources().getColor(android.R.color.holo_blue_bright),
@@ -137,6 +152,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             }
         });
     }
+
     private void initLocation() {
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
@@ -217,7 +233,7 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
                                         p.setObjectId(m.getObjectId());
                                         scrips.add(p);
                                         adapter.notifyDataSetChanged();
-                                        HD.TLOG("发现的纸片： " + m.getUser_id() +"  "+ m.getGender()+"  "+scrips.size());
+                                        HD.TLOG("发现的纸片： " + m.getUser_id() + "  " + m.getGender() + "  " + scrips.size());
                                     } else {
                                         HD.LOG("失敗：" + e.getMessage() + ", " + e.getErrorCode());
                                     }
@@ -249,4 +265,6 @@ public class Discover extends AppCompatActivity implements SwipeRefreshLayout.On
             }
         });
     }
+
+
 }

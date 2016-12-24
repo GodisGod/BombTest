@@ -207,6 +207,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         if (account.equals(account_remote) && password.equals(password_remote)) {
                             //先从本地的缓存文件获取，如果没有就访问服务器获取,如果有就直接登录
                             token = DemoContext.getInstance().getSharedPreferences().getString(account, "no");
+                            HD.LOG("token is no :"+token);
                             Constant.curtoken = token;
                             Constant.sign = user.getUser_sign();
                             Constant.usergender = user.getUser_gender();
@@ -214,7 +215,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             Constant.Cur_userId = user.getUser_id();
                             Constant.Cur_userIcon = user.getUser_icon().getFileUrl();
                             Constant.userPassword = user.getUser_password();
-                            if (token.equals("no")) {
+                            if (token.equals("no")|token==null) {
                                 getTokenFromCloud(account, user.getUser_name(), user.getUser_icon().getFileUrl());
                             } else {
                                 startActivity(new Intent(ctx, MainActivity.class));

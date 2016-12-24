@@ -29,7 +29,8 @@ public class ScripAdapter extends BaseAdapter {
     private String[] gender_types_m = {"小小正太", "魅力少年", "成熟暖男", "神秘男性"};
     private Random random;
     private ViewHolder holder = null;
-//    private GlideCircleTransform transform;
+
+    //    private GlideCircleTransform transform;
     public ScripAdapter(Context mcontext, List<PaperMessageUser> paperMessageUsers) {
         this.context = mcontext;
         this.paperMessageUsers = paperMessageUsers;
@@ -63,6 +64,7 @@ public class ScripAdapter extends BaseAdapter {
             holder.item_scrip_gender_type = (TextView) convertView.findViewById(R.id.item_scrip_gender_type);
             holder.item_scrip_content = (TextView) convertView.findViewById(R.id.item_scrip_text);
             holder.item_scrip_time = (TextView) convertView.findViewById(R.id.item_scrip_create_time);
+            holder.item_scrip_img = (ImageView) convertView.findViewById(R.id.scrip_img);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
@@ -79,10 +81,21 @@ public class ScripAdapter extends BaseAdapter {
         holder.item_scrip_time.setText(paperMessageUser.getCreateTime());
         if (paperMessageUser.getType() == 1) {
             holder.item_scrip_content.setText(paperMessageUser.getSend_text_message());
+            holder.item_scrip_img.setVisibility(View.GONE);
         } else if (paperMessageUser.getType() == 2) {
             holder.item_scrip_content.setText("这是一条奇妙的语音消息");
-        } else if (paperMessageUser.getType() == 3 || paperMessageUser.getType() == 4) {
-            holder.item_scrip_content.setText("包含了一张神奇图片的消息");
+        } else if (paperMessageUser.getType() == 3) {
+            holder.item_scrip_content.setText("这是一张包含神奇图片的消息");
+            Glide.with(context).load(paperMessageUser.getSend_img_message().getFileUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(holder.item_scrip_img);
+        } else if (paperMessageUser.getType() == 4) {
+            holder.item_scrip_content.setText(paperMessageUser.getSend_text_message());
+            Glide.with(context).load(paperMessageUser.getSend_img_message().getFileUrl())
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .placeholder(R.mipmap.ic_launcher)
+                    .into(holder.item_scrip_img);
         }
 
         if (paperMessageUser.getGender().equals("f")) {
@@ -101,5 +114,6 @@ public class ScripAdapter extends BaseAdapter {
         TextView item_scrip_gender_type;
         TextView item_scrip_content;
         TextView item_scrip_time;
+        ImageView item_scrip_img;
     }
 }
