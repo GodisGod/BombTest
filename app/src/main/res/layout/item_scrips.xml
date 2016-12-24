@@ -7,8 +7,7 @@
     <ImageView
         android:id="@+id/item_scrip_icon"
         android:layout_width="50dp"
-        android:layout_height="50dp"
-         />
+        android:layout_height="50dp" />
 
     <TextView
         android:id="@+id/item_scrip_gender_type"
@@ -46,6 +45,16 @@
         android:layout_height="300dp"
         android:layout_below="@id/item_scrip_text"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-         />
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/item_scrip_text2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/item_scrip_text"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp"
+        android:layout_marginTop="50dp"
+        android:gravity="center"
+        android:textSize="30sp" />
 </RelativeLayout>
