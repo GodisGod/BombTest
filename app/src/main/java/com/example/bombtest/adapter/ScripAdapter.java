@@ -82,18 +82,22 @@ public class ScripAdapter extends BaseAdapter {
         holder.item_scrip_time.setText(paperMessageUser.getCreateTime());
         if (paperMessageUser.getType() == 1) {
             holder.item_scrip_content.setText("");
+            holder.item_scrip_text2.setVisibility(View.VISIBLE);
             holder.item_scrip_text2.setText(paperMessageUser.getSend_text_message());
             holder.item_scrip_img.setVisibility(View.GONE);
         } else if (paperMessageUser.getType() == 2) {
             holder.item_scrip_content.setText("这是一条奇妙的语音消息");
+            holder.item_scrip_text2.setVisibility(View.GONE);
         } else if (paperMessageUser.getType() == 3) {
             holder.item_scrip_content.setText("这是一张包含神奇图片的消息");
+            holder.item_scrip_text2.setVisibility(View.GONE);
             Glide.with(context).load(paperMessageUser.getSend_img_message().getFileUrl())
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.mipmap.ic_launcher)
                     .into(holder.item_scrip_img);
         } else if (paperMessageUser.getType() == 4) {
             holder.item_scrip_content.setText(paperMessageUser.getSend_text_message());
+            holder.item_scrip_text2.setVisibility(View.GONE);
             Glide.with(context).load(paperMessageUser.getSend_img_message().getFileUrl())
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .placeholder(R.mipmap.ic_launcher)
